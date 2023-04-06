@@ -37,6 +37,7 @@ GLuint get_pieces_image(t_gui *gui, t_case *square)
 			case BLACK | PAWN: return gui->pieces.black_pawn;
 			case BLACK | KNIGHT: return gui->pieces.black_knight;
 			case BLACK | KING: return gui->pieces.black_king;
+			case EMPTY: return gui->pieces.empty;
 			default: return 0;
 		}
 }

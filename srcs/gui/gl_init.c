@@ -6,9 +6,9 @@ static void create_case(t_gui *gui)
 {
 	gui->case_list = malloc(64 * sizeof(t_case));
 	t_case  *current_case;
-	for (int y = 0; y < 8; y++)
+	for (int x = 0; x < 8; x++)
 	{
-		for (int x = 0; x < 8; x++)
+		for (int y = 0; y < 8; y++)
 		{
 			current_case = &gui->case_list[y * 8 + x];
 
@@ -68,8 +68,6 @@ void	load_textures(t_gui *gui)
 	gui->pieces.black_queen = load_texture("images/black_queen.png");
 	gui->pieces.black_king = load_texture("images/black_king.png");
 	gui->pieces.black_pawn = load_texture("images/black_pawn.png");
-
-	
 }
 
 void	init_game(void)
@@ -94,11 +92,6 @@ void	init_gui(t_gui *gui)
 	gui->addr = NULL;
 	gui->square_selected = NULL;
 	create_case(gui);
-
-}
-
-void	display_pieces(t_gui *gui)
-{
 
 }
 
