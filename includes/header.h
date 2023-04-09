@@ -113,10 +113,16 @@ void    create_board(t_gui *gui);
 int 	get_square_from_xy(int x, int y);
 void    case_selected(t_gui *gui, t_case *square);
 
+
+int		is_king_in_check(t_gui *gui, int is_white_king);
 int		try_to_move(t_gui *gui, t_case *start_square, t_case *end_square);
+int		move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square);
 int		is_white_piece(t_case *square);
 GLuint	get_pieces_image(t_gui *gui, t_case *square);
 void	deselect(t_gui *gui, t_case *square);
 void	load_textures(t_gui *gui);
+void draw_chess_piece(GLuint texture, int x, int y, int case_size);
+void draw_transparent_square(int x, int y, int case_size);
+
 
 #endif

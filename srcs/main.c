@@ -12,24 +12,27 @@ void	init_openGL(void)
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glMatrixMode(GL_PROJECTION);
     gluOrtho2D(0.0, 800.0, 0.0, 800.0);
-
-	 // Activer la transparence
-
-
 }
 
 void draw_chess_piece(GLuint texture, int x, int y, int case_size)
 {
+	
+
     glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	
+
+
     glBegin(GL_QUADS);
-    glTexCoord2f(0, 1); glVertex2i(x, y);
-    glTexCoord2f(1, 1); glVertex2i(x + case_size, y);
-    glTexCoord2f(1, 0); glVertex2i(x + case_size, y + case_size);
-    glTexCoord2f(0, 0); glVertex2i(x, y + case_size);
+    glTexCoord2f(0, 1); glVertex2i(x, BOARD_SIZE - y - 100);
+    glTexCoord2f(1, 1); glVertex2i(x + case_size, BOARD_SIZE - y - 100);
+    glTexCoord2f(1, 0); glVertex2i(x + case_size, BOARD_SIZE - y - 100 + case_size);
+    glTexCoord2f(0, 0); glVertex2i(x, BOARD_SIZE - y - 100 + case_size);
     glEnd();
 
     glDisable(GL_BLEND);
@@ -39,15 +42,22 @@ void draw_chess_piece(GLuint texture, int x, int y, int case_size)
 void draw_pieces_from_case_list(t_gui *gui)
 {
     int case_size = BOARD_SIZE / 8;
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < 64; i++)
+    {
         t_case *square = &gui->case_list[i];
 
-        if (square->status != EMPTY) {
+        if (square->status != EMPTY)
+        {
             draw_chess_piece(square->square_img, square->startX, square->startY, case_size);
-			printf("Draw on Square %d, at x:%d,y:%d status %d\n",i, square->startX, square->startY, square->status);
+
+            if (game.is_piece_selected && gui->square_selected == square)
+            {
+                draw_transparent_square(square->startX, square->startY, case_size);
+            }
         }
     }
 }
+
 
 void display_board(void)
 {
@@ -68,13 +78,13 @@ void display_board(void)
             else
             {
 				f = 1;
-                glColor3f(0.3, 0.2, 0.1);
+                glColor3f(0.8, 0.7, 0.6);
             }
             glBegin(GL_QUADS);
-            glVertex2i(x, y);
-            glVertex2i(x, y + 100);
-            glVertex2i(x + 100, y + 100);
-            glVertex2i(x + 100, y);
+            glVertex2i(x,  BOARD_SIZE - y - 100);
+            glVertex2i(x, BOARD_SIZE - y - 100 + 100);
+            glVertex2i(x + 100, BOARD_SIZE - y - 100 + 100);
+            glVertex2i(x + 100, BOARD_SIZE - y - 100);
             glEnd();
 			
         }
@@ -86,11 +96,11 @@ void display_board(void)
 
 void mouse_hook(int button, int state, int x, int y)
 {
-    if (button == GLUT_LEFT_BUTTON)
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
     {
         int square_n = get_square_from_xy(x, y);
 		t_case *square = &gui->case_list[square_n];
-		printf("isSelected %d, isWhiteToPlay %d, square id %d, pieceIsWhite %d, square status %d\n", game.is_piece_selected, game.white_to_play, square_n, is_white_piece(square), square->status);
+		printf("isSelected %d, isWhiteToPlay %d, square id %d, pieceIsWhite %d, square status %d, image_status %d\n", game.is_piece_selected, game.white_to_play, square_n, is_white_piece(square), square->status, square->square_img);
 		if (game.is_piece_selected == 1)
 		{
 			printf("Square selected %d, x:%d, y%d\n", game.is_piece_selected, gui->square_selected->startX, gui->square_selected->startY);
@@ -140,8 +150,8 @@ void init_squares(t_gui *gui)
 	square[56].status = ROOK | WHITE;
 	square[57].status = KNIGHT | WHITE;
 	square[58].status = BISHOP | WHITE;
-	square[59].status = KING | WHITE;
-	square[60].status = QUEEN | WHITE;
+	square[59].status = QUEEN | WHITE;
+	square[60].status = KING | WHITE;
 	square[61].status = BISHOP | WHITE;
 	square[62].status = KNIGHT | WHITE;
 	square[63].status = ROOK | WHITE;
@@ -170,16 +180,17 @@ void init_squares(t_gui *gui)
     }
     for (int i = 48; i < 56; i++)
     {
-        square[i].status = PAWN | WHITE;
+        square[i].status = PAWN | WHITE;	
        // square[i].square_img = gui->pieces.white_pawn;
     }
 
-	for (int i = 0; i < 64; i++)
-	{
-		square[i].square_img = get_pieces_image(gui, &square[i]);
-	}
-	printf("status %d\n", square[7].status);
-	square[7].square_img = gui->pieces.white_rook;
+
+    for (int i = 0; i < 64; i++)
+    {
+        square[i].square_img = get_pieces_image(gui, &square[i]);
+//        printf("square[%d].img = %d\n", i, square[i].square_img);
+    }
+
 }
 
 void key_hook(unsigned char key, int x, int y)
@@ -197,19 +208,15 @@ int main(int argc, char *argv[])
     gui = malloc(sizeof(t_gui)); 
 
     printf("INIT\n");
-	
 	init_game();
 	init_gui(gui);
 
-	printf("square statud %d\n", gui->case_list[2].status);
-	
 	glutInit(&argc, argv);
-	
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-
-	glutInitWindowPosition(50, 50);
+	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(BOARD_SIZE, BOARD_SIZE);
 	glutCreateWindow("CHESS-IA");
+
 	init_openGL();
 	load_textures(gui);
 	init_squares(gui);
@@ -218,6 +225,7 @@ int main(int argc, char *argv[])
 	glutKeyboardFunc(key_hook);
     glutMainLoop();
     free(gui);
+	free(gui->case_list);
     printf("FINISH\n");
     return 0;
 }

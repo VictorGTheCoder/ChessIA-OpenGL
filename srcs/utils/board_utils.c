@@ -3,6 +3,23 @@
 
 extern t_game game;
 
+void draw_transparent_square(int x, int y, int case_size)
+{
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(1.0, 1.0, 0.5, 0.3);
+
+    glBegin(GL_QUADS);
+    glVertex2i(x,BOARD_SIZE - y - 100);
+    glVertex2i(x + case_size, BOARD_SIZE - y - 100);
+    glVertex2i(x + case_size, BOARD_SIZE - y - 100 + case_size);
+    glVertex2i(x, BOARD_SIZE - y - 100 + case_size);
+    glEnd();
+
+    glDisable(GL_BLEND);
+}
+
+
 GLuint get_pieces_image_selected(t_gui *gui, t_case *square)
 {
 		switch (square->status) {
@@ -18,6 +35,7 @@ GLuint get_pieces_image_selected(t_gui *gui, t_case *square)
 			case BLACK | PAWN: return gui->pieces.black_pawn_s;
 			case BLACK | KNIGHT: return gui->pieces.black_knight_s;
 			case BLACK | KING: return gui->pieces.black_king_s;
+			case EMPTY: return 0;
 			default: return 0;
 		}
 }
@@ -37,7 +55,7 @@ GLuint get_pieces_image(t_gui *gui, t_case *square)
 			case BLACK | PAWN: return gui->pieces.black_pawn;
 			case BLACK | KNIGHT: return gui->pieces.black_knight;
 			case BLACK | KING: return gui->pieces.black_king;
-			case EMPTY: return gui->pieces.empty;
+			case EMPTY: return 0;
 			default: return 0;
 		}
 }
@@ -49,34 +67,57 @@ int is_white_piece(t_case *square)
 	return square->status >= WHITE ? 1 : 0;
 }
 
-void    case_selected(t_gui *gui, t_case *square)
+void draw_highlighted_piece(GLuint texture, int x, int y, int case_size)
 {
-	if (is_white_piece(square) != game.white_to_play)
-		return ;
+    draw_chess_piece(texture, x, y, case_size); // Dessinez la pièce normalement
 
-	GLuint imgs = get_pieces_image_selected(gui, square);
+    // Dessinez un carré blanc semi-transparent par-dessus
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(1.0f, 1.0f, 1.0f, 0.3f); // Couleur blanche avec une opacité de 30%
 
-	if (imgs != 0)
-	{
-		if (square->square_img != 0)
-		{
-			////mlx_destroy_image(gui->//mlx, square->square_img);
-		}
-		game.is_piece_selected = 1;
-		printf("piece is selected\n");
-		if (gui->square_selected != 0)
-		{
-			GLuint img = get_pieces_image(gui, gui->square_selected);
-			square->square_img = img;
-			//mlx_put_image_to_window(gui->//mlx, gui->win, img, gui->square_selected->startX, gui->square_selected->startY);
-		}
-		square->square_img = imgs;
-		gui->square_selected = square;
-		//mlx_put_image_to_window(gui->//mlx, gui->win, imgs, square->startX, square->startY);
-	}
-	else
-		perror("put image");
+    glBegin(GL_QUADS);
+    glVertex2i(x,BOARD_SIZE - y - 100);
+    glVertex2i(x + case_size, BOARD_SIZE - y - 100);
+    glVertex2i(x + case_size, BOARD_SIZE - y - 100 + case_size);
+    glVertex2i(x, BOARD_SIZE - y - 100 + case_size);
+    glEnd();
+
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f); // Réinitialiser la couleur à blanc opaque
+    glDisable(GL_BLEND);
 }
+
+
+void case_selected(t_gui *gui, t_case *square)
+{
+    if (game.is_piece_selected && is_white_piece(square) == game.white_to_play)
+    {
+        // Désélectionnez la pièce si la même couleur est cliquée
+        game.is_piece_selected = 0;
+        gui->square_selected = NULL;
+    }
+    else if (is_white_piece(square) == game.white_to_play)
+    {
+        // Sélectionnez la pièce si elle est de la couleur appropriée
+        game.is_piece_selected = 1;
+        gui->square_selected = square;
+    }
+    else if (game.is_piece_selected)
+    {
+        // Effectuez le mouvement si une pièce est sélectionnée et si la case cliquée est vide ou a une pièce de couleur opposée
+        gui->square_selected->square_img = 0; // Enlevez la pièce de la case d'origine
+        square->square_img = get_pieces_image(gui, gui->square_selected); // Placez la pièce sur la nouvelle case
+
+        game.is_piece_selected = 0;
+        gui->square_selected = NULL;
+        game.white_to_play = !game.white_to_play; // Changez le joueur actuel
+    }
+
+    glutPostRedisplay();
+}
+
+
+
 
 int		get_square_from_xy(int x, int y)
 {

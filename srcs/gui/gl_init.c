@@ -4,26 +4,28 @@ extern t_game game;
 
 static void create_case(t_gui *gui)
 {
-	gui->case_list = malloc(64 * sizeof(t_case));
-	t_case  *current_case;
-	for (int x = 0; x < 8; x++)
-	{
-		for (int y = 0; y < 8; y++)
-		{
-			current_case = &gui->case_list[y * 8 + x];
+    gui->case_list = malloc(64 * sizeof(t_case));
+    t_case  *current_case;
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            int invertedY = y; // Inversez l'axe des Y ici
+            current_case = &gui->case_list[invertedY * 8 + x];
 
-			current_case->startX = (int) x * (BOARD_SIZE / 8);
-			current_case->startY = (int) y * (BOARD_SIZE / 8);
-			current_case->endX = (int) x * (BOARD_SIZE / 8 + 1);
-			current_case->endY = (int) y * (BOARD_SIZE / 8 + 1);
+            current_case->startX = (int) x * (BOARD_SIZE / 8);
+            current_case->startY = (int) y * (BOARD_SIZE / 8);
+            current_case->endX = (int) x * (BOARD_SIZE / 8 + 1);
+            current_case->endY = (int) y * (BOARD_SIZE / 8 + 1);
 
-			current_case->case_n = (y > 0) ? &gui->case_list[(y - 1) * 8 +  x] : NULL;
-			current_case->case_s = (x < 7) ? &gui->case_list[(y + 1) * 8 + x] : NULL;
-			current_case->case_w = (x > 0) ? &gui->case_list[(y - 1) + 8 * x] : NULL;
-			current_case->case_e = (x < 7) ? &gui->case_list[(y + 1) + 8 * x] : NULL; 
-		}
-	}
+            current_case->case_n = (y > 0) ? &gui->case_list[(invertedY - 1) * 8 +  x] : NULL;
+            current_case->case_s = (y < 7) ? &gui->case_list[(invertedY + 1) * 8 + x] : NULL;
+            current_case->case_w = (x > 0) ? &gui->case_list[(invertedY - 1) + 8 * x] : NULL;
+            current_case->case_e = (x < 7) ? &gui->case_list[(invertedY + 1) + 8 * x] : NULL; 
+        }
+    }
 }
+
 
 GLuint	load_texture(const char* file)
 {
@@ -47,6 +49,12 @@ GLuint	load_texture(const char* file)
     }
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	GLenum error = glGetError();
+if (error != GL_NO_ERROR)
+{
+    printf("OpenGL error: %d\n", error);
+}
+
     SOIL_free_image_data(image);
 
     printf("Loaded texture %s with ID %u\n", file, textureID);
