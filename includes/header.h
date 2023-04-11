@@ -8,6 +8,7 @@
 # include "libft/libft.h"
 # include "square.h"
 # include <SOIL/SOIL.h>
+# include <string.h>
 
 # define BLACK_COLOR 0x8B5A2B
 # define WHITE_COLOR 0xF5DEB3
@@ -118,11 +119,14 @@ int		is_king_in_check(t_gui *gui, int is_white_king);
 int		try_to_move(t_gui *gui, t_case *start_square, t_case *end_square);
 int		move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square);
 int		is_white_piece(t_case *square);
+int		move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square);
 GLuint	get_pieces_image(t_gui *gui, t_case *square);
 void	deselect(t_gui *gui, t_case *square);
 void	load_textures(t_gui *gui);
 void draw_chess_piece(GLuint texture, int x, int y, int case_size);
 void draw_transparent_square(int x, int y, int case_size);
+void print_board_in_term(t_gui *gui);
+t_gui *clone_t_gui(t_gui *gui);
 
 
 #endif

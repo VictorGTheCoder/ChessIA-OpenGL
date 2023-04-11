@@ -6,7 +6,7 @@ extern t_game game;
 void destroy_piece(t_case *square, t_gui *gui)
 {
 
-	square->square_img = gui->pieces.empty;
+	square->square_img = 0;
 	square->status = EMPTY;
 }
 
@@ -23,6 +23,7 @@ void move(t_gui *gui, t_case *start_square, t_case *end_square)
 		game.en_passant_target = NULL;
 	}
 	end_square->status = start_square->status;
+	start_square->status = EMPTY;
 	end_square->square_img = start_square->square_img;
 	destroy_piece(start_square, gui);
 	gui->square_selected = NULL;
@@ -253,7 +254,7 @@ int is_valid_king_move(t_gui *gui, t_case *start_square, t_case *end_square)
     return 0;
 }
 
-int move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square)
+int move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square)
 {
 	//printf("Start square x: %d, y:%d, END square x: %d, y:%d\n", start_square->startX, start_square->startY, end_square->startX, end_square->endY);
 	if ((start_square->status & (BLACK | WHITE)) == (end_square->status & (BLACK | WHITE)))
@@ -289,38 +290,71 @@ int move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square)
 	return 1;
 }
 
+int move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square)
+{
+	if (move_is_conform(gui, start_square, end_square))
+	{
+		printf("Move is conform\n");
+		t_gui *temp_gui = clone_t_gui(gui);
+
+
+		//ft_memcpy(temp_gui, gui, sizeof(t_gui));
+
+		t_case *temp_start_square = &temp_gui->case_list[get_square_from_xy(start_square->startX, start_square->startY)];
+		t_case *temp_end_square = &temp_gui->case_list[get_square_from_xy(end_square->startX, end_square->startY)];
+		//t_case *temp_end_square = malloc(sizeof(t_case));
+		/*memcpy(temp_start_square, start_square, sizeof(t_case));
+		memcpy(temp_end_square, end_square, sizeof(t_case));
+		&temp_gui->case_list[get_square_from_xy(start_square->startX, start_square->startY)] = temp_start_square;
+		&temp_gui->case_list[get_square_from_xy(end_square->startX, end_square->startY)] = temp_end_square;*/
+		move(temp_gui, temp_start_square, temp_end_square);
+
+
+		printf("TEMP BOARD\n");
+		print_board_in_term(temp_gui);
+		printf("No temp\n");
+				print_board_in_term(gui);
+		if (is_king_in_check(temp_gui, game.white_to_play) == 1)
+		{	
+			printf("cannot move\n");
+			free(temp_gui);
+			return (0);
+		}
+		printf("Move is valid\n");
+		free(temp_gui);
+		return (1);
+	}
+	return (0);
+}
+
 int try_to_move(t_gui *gui, t_case *start_square, t_case *end_square)
 {
+
     printf("Start Square %d, End square %d, King is in check %d\n", get_square_from_xy(start_square->startX, start_square->startY), get_square_from_xy(end_square->startX, end_square->startY), is_king_in_check(gui, game.white_to_play));
     int	r;
 
-	if ((r = move_is_valid(gui, start_square, end_square)))
+    if ((r = move_is_valid(gui, start_square, end_square)))
     {
-        printf("Move is valid\n");
         // Mise à jour de la cible en passant avant d'appeler la fonction move
         if ((start_square->status & (PAWN | BISHOP | ROOK | QUEEN | KNIGHT | KING)) == PAWN && abs((end_square->startY - start_square->startY) / 100) == 2)
-            game.en_passant_target = (is_white_piece(start_square) == 1) ? end_square->case_s : end_square->case_n;
+        {
+            game.en_passant_target = (start_square->startY > end_square->startY) ? end_square->case_n : end_square->case_s;
+        }
         else
+        {
             game.en_passant_target = NULL;
+        }
+
+        // Appliquer le mouvement sur la structure principale 'gui'
         move(gui, start_square, end_square);
-
-		if (is_king_in_check(gui, game.white_to_play))
-		{
-			move(gui, end_square, start_square);
-			game.is_piece_selected = 1;
-			gui->square_selected = start_square;
-			return (0);
-		}
-
-		
-
-        if (game.white_to_play == 0)
+		  if (game.white_to_play == 0)
             game.white_to_play = 1;
         else
             game.white_to_play = 0;
         game.is_piece_selected = 0;
         return 1; // Indique que le mouvement est valide et a été effectué
     }
-    return 0; // Indique que le mouvement n'est pas valide
+    return r;
 }
+
 

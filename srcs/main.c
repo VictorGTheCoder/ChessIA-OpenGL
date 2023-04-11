@@ -183,8 +183,6 @@ void init_squares(t_gui *gui)
         square[i].status = PAWN | WHITE;	
        // square[i].square_img = gui->pieces.white_pawn;
     }
-
-
     for (int i = 0; i < 64; i++)
     {
         square[i].square_img = get_pieces_image(gui, &square[i]);

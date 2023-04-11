@@ -3,6 +3,8 @@
 
 extern t_game game;
 
+
+
 void draw_transparent_square(int x, int y, int case_size)
 {
     glEnable(GL_BLEND);
