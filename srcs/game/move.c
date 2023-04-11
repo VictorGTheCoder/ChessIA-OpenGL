@@ -207,50 +207,8 @@ int is_valid_king_move(t_gui *gui, t_case *start_square, t_case *end_square)
     {
         return 1;
     }
-
-    // Vérifier le roque
-    if (diffY == 0 && diffX == 2)
-    {
-        if (is_white)
-        {
-            if (end_square->startX > start_square->startX && game.white_can_castle_king_side &&
-                gui->case_list[61].status == EMPTY && gui->case_list[62].status == EMPTY)
-            {
-				move(gui, &gui->case_list[63], &gui->case_list[61]); // Move rook
-				game.white_can_castle_queen_side = 0;
-				game.white_can_castle_king_side = 0;
-                return 2; // Roque côté roi pour les blancs
-            }
-            else if (end_square->startX < start_square->startX && game.white_can_castle_queen_side &&
-                     gui->case_list[59].status == EMPTY && gui->case_list[58].status == EMPTY && gui->case_list[59].status == EMPTY && gui->case_list[3].status == EMPTY)
-            {
-				move(gui, &gui->case_list[56], &gui->case_list[59]);// Move rook
-				game.white_can_castle_queen_side = 0;
-				game.white_can_castle_king_side = 0;
-                return 3; // Roque côté dame pour les blancs
-            }
-        }
-        else
-        {
-            if (end_square->startX > start_square->startX && game.black_can_castle_king_side &&
-                gui->case_list[5].status == EMPTY && gui->case_list[6].status == EMPTY)
-            {
-				move(gui, &gui->case_list[7], &gui->case_list[5]); // Move rook
-				game.black_can_castle_queen_side = 0;
-				game.black_can_castle_king_side = 0;
-                return 4; // Roque côté roi pour les noirs
-            }
-            else if (end_square->startX < start_square->startX && game.black_can_castle_queen_side &&
-                    gui->case_list[1].status == EMPTY && gui->case_list[2].status == EMPTY && gui->case_list[3].status == EMPTY)
-            {
-				move(gui, &gui->case_list[0], &gui->case_list[3]); // Move rook
-				game.black_can_castle_queen_side = 0;
-				game.black_can_castle_king_side = 0;
-                return 5; // Roque côté dame pour les noirs
-            }
-        }
-    }
-
+	 if (diffY == 0 && diffX == 2)
+		return 2;
     return 0;
 }
 
@@ -292,16 +250,18 @@ int move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square)
 
 int move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square)
 {
-	if (move_is_conform(gui, start_square, end_square))
+	int	r;
+	t_gui *temp_gui = clone_t_gui(gui);
+	if (!temp_gui)
+		printf("Memory Allocation error. You may have no space left on your computer\n");
+	t_case *temp_start_square = &temp_gui->case_list[get_square_from_xy(start_square->startX, start_square->startY)];
+	t_case *temp_end_square = &temp_gui->case_list[get_square_from_xy(end_square->startX, end_square->startY)];	
+	if ((r = move_is_conform(temp_gui, temp_start_square, temp_end_square)))
 	{
 		printf("Move is conform\n");
-		t_gui *temp_gui = clone_t_gui(gui);
-
 
 		//ft_memcpy(temp_gui, gui, sizeof(t_gui));
 
-		t_case *temp_start_square = &temp_gui->case_list[get_square_from_xy(start_square->startX, start_square->startY)];
-		t_case *temp_end_square = &temp_gui->case_list[get_square_from_xy(end_square->startX, end_square->startY)];
 		//t_case *temp_end_square = malloc(sizeof(t_case));
 		/*memcpy(temp_start_square, start_square, sizeof(t_case));
 		memcpy(temp_end_square, end_square, sizeof(t_case));
@@ -310,21 +270,70 @@ int move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square)
 		move(temp_gui, temp_start_square, temp_end_square);
 
 
-		printf("TEMP BOARD\n");
+		/*printf("TEMP BOARD\n");
 		print_board_in_term(temp_gui);
 		printf("No temp\n");
-				print_board_in_term(gui);
+		print_board_in_term(gui);*/
 		if (is_king_in_check(temp_gui, game.white_to_play) == 1)
 		{	
 			printf("cannot move\n");
 			free(temp_gui);
-			return (0);
+			return (r);
 		}
+		move_is_conform(gui, start_square, end_square); //On effectue le rock
 		printf("Move is valid\n");
+		free(temp_gui->case_list);
 		free(temp_gui);
-		return (1);
+		return (r);
 	}
-	return (0);
+	return (r);
+}
+
+int	check_rock(t_gui *gui, t_case *start_square, t_case *end_square)
+{
+
+	int diffX = abs(end_square->startX - start_square->startX) / 100;
+    int diffY = abs(end_square->startY - start_square->startY) / 100;
+    int is_white = is_white_piece(start_square);
+
+	if (is_white)
+        {
+            if (end_square->startX > start_square->startX && game.white_can_castle_king_side &&
+                gui->case_list[61].status == EMPTY && gui->case_list[62].status == EMPTY)
+            {
+				move(gui, &gui->case_list[63], &gui->case_list[61]); // Move rook
+				game.white_can_castle_queen_side = 0;
+				game.white_can_castle_king_side = 0;
+                return 2; // Roque côté roi pour les blancs
+            }
+            else if (end_square->startX < start_square->startX && game.white_can_castle_queen_side &&
+                     gui->case_list[59].status == EMPTY && gui->case_list[58].status == EMPTY && gui->case_list[59].status == EMPTY && gui->case_list[3].status == EMPTY)
+            {
+				move(gui, &gui->case_list[56], &gui->case_list[59]);// Move rook
+				game.white_can_castle_queen_side = 0;
+				game.white_can_castle_king_side = 0;
+                return 3; // Roque côté dame pour les blancs
+            }
+        }
+        else
+        {
+            if (end_square->startX > start_square->startX && game.black_can_castle_king_side &&
+                gui->case_list[5].status == EMPTY && gui->case_list[6].status == EMPTY)
+            {
+				move(gui, &gui->case_list[7], &gui->case_list[5]); // Move rook
+				game.black_can_castle_queen_side = 0;
+				game.black_can_castle_king_side = 0;
+                return 4; // Roque côté roi pour les noirs
+            }
+            else if (end_square->startX < start_square->startX && game.black_can_castle_queen_side &&
+                    gui->case_list[1].status == EMPTY && gui->case_list[2].status == EMPTY && gui->case_list[3].status == EMPTY)
+            {
+				move(gui, &gui->case_list[0], &gui->case_list[3]); // Move rook
+				game.black_can_castle_queen_side = 0;
+				game.black_can_castle_king_side = 0;
+                return 5; // Roque côté dame pour les noirs
+            }
+        }
 }
 
 int try_to_move(t_gui *gui, t_case *start_square, t_case *end_square)
@@ -347,7 +356,9 @@ int try_to_move(t_gui *gui, t_case *start_square, t_case *end_square)
 
         // Appliquer le mouvement sur la structure principale 'gui'
         move(gui, start_square, end_square);
-		  if (game.white_to_play == 0)
+		if (r == 2)
+			printf("Check rock %d\n", check_rock(gui, start_square, end_square));
+		if (game.white_to_play == 0)
             game.white_to_play = 1;
         else
             game.white_to_play = 0;

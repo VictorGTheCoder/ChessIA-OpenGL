@@ -17,7 +17,7 @@ int is_king_in_check(t_gui *gui, int is_white_king)
     }
 
     // Vérifier si le roi est en échec
-	print_board_in_term(gui);
+	//print_board_in_term(gui);
     for (int i = 0; i < 64; i++)
     {
         t_case *attacker_square = &gui->case_list[i];
