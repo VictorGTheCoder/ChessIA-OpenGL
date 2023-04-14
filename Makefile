@@ -1,7 +1,7 @@
 NAME = ChessAI
 
 # Sources
-SRCS = $(addprefix srcs/, main.c gui/board.c gui/gl_init.c utils/board_utils.c utils/move_utils.c utils/utils.c game/move.c)
+SRCS = $(addprefix srcs/, main.c gui/board.c gui/gl_init.c utils/board_utils.c utils/move_utils.c utils/utils.c game/move.c gui/hook.c)
 
 OBJS = ${SRCS:.c=.o}
 

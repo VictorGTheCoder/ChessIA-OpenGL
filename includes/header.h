@@ -13,19 +13,19 @@
 # define BLACK_COLOR 0x8B5A2B
 # define WHITE_COLOR 0xF5DEB3
 
-#define	KEY_ESCAPE_MACOS 53
-#define KEY_ESCAPE_LINUX 65307
+# define	KEY_ESCAPE_MACOS 53
+# define KEY_ESCAPE_LINUX 65307
 
-#define EMPTY 0x00000
-#define PAWN 0b00001
-#define BISHOP 0b00010
-#define ROOK 0b00011
-#define QUEEN 0b00100
-#define KNIGHT 0b00101
-#define KING 0b00110
+# define EMPTY 0x00000
+# define PAWN 0b00001
+# define BISHOP 0b00010
+# define ROOK 0b00011
+# define QUEEN 0b00100
+# define KNIGHT 0b00101
+# define KING 0b00110
 
-#define BLACK 0b01000
-#define WHITE 0b10000
+# define BLACK 0b01000
+# define WHITE 0b10000
 
 
 typedef struct s_pieces
@@ -114,6 +114,8 @@ void    create_board(t_gui *gui);
 int 	get_square_from_xy(int x, int y);
 void    case_selected(t_gui *gui, t_case *square);
 
+void	key_hook(unsigned char key, int x, int y);
+void	mouse_hook(int button, int state, int x, int y);
 
 int		is_king_in_check(t_gui *gui, int is_white_king);
 int		try_to_move(t_gui *gui, t_case *start_square, t_case *end_square);
@@ -121,12 +123,17 @@ int		move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square);
 int		is_white_piece(t_case *square);
 int		move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square);
 GLuint	get_pieces_image(t_gui *gui, t_case *square);
-void	deselect(t_gui *gui, t_case *square);
+void	deselect_piece(t_gui *gui, t_case *square);
 void	load_textures(t_gui *gui);
-void draw_chess_piece(GLuint texture, int x, int y, int case_size);
-void draw_transparent_square(int x, int y, int case_size);
-void print_board_in_term(t_gui *gui);
-t_gui *clone_t_gui(t_gui *gui);
+void	draw_chess_piece(GLuint texture, int x, int y, int case_size);
+void	draw_transparent_square(int x, int y, int case_size);
+void	print_board_in_term(t_gui *gui);
+t_gui	*clone_t_gui(t_gui *gui);
+void	draw_pieces_from_case_list(t_gui *gui);
 
+void	display_board(void);
+
+extern t_game game;
+extern t_gui *gui;
 
 #endif

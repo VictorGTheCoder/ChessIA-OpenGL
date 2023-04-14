@@ -3,19 +3,19 @@
 
 extern t_game game;
 
-void destroy_piece(t_case *square, t_gui *gui)
+void remove_piece(t_case *square, t_gui *gui)
 {
 
 	square->square_img = 0;
 	square->status = EMPTY;
 }
 
-void deselect(t_gui *gui, t_case *square)
+void deselect_piece(t_gui *gui, t_case *square)
 {
 	gui->square_selected = NULL;
 }
 
-void move(t_gui *gui, t_case *start_square, t_case *end_square)
+void move_piece(t_gui *gui, t_case *start_square, t_case *end_square)
 {
 	// Vörifier si c'est un coup en passant
 	if ((start_square->status & (PAWN | BISHOP | ROOK | QUEEN | KNIGHT | KING)) == PAWN && end_square == game.en_passant_target) {
@@ -25,7 +25,7 @@ void move(t_gui *gui, t_case *start_square, t_case *end_square)
 	end_square->status = start_square->status;
 	start_square->status = EMPTY;
 	end_square->square_img = start_square->square_img;
-	destroy_piece(start_square, gui);
+	remove_piece(start_square, gui);
 	gui->square_selected = NULL;
 	glutPostRedisplay();
 }
@@ -52,7 +52,7 @@ int is_valid_pawn_move(t_gui *gui, t_case *start_square, t_case *end_square)
 	if (end_square == game.en_passant_target)
 	{
 		t_case *square = is_white_piece(start_square) == 1 ? end_square->case_s : end_square->case_n;
-		destroy_piece(square, gui);
+		remove_piece(square, gui);
 		return 1;
 	}
 
@@ -207,9 +207,19 @@ int is_valid_king_move(t_gui *gui, t_case *start_square, t_case *end_square)
     {
         return 1;
     }
-	 if (diffY == 0 && diffX == 2)
-		return 2;
-    return 0;
+	else if (diffY == 0 && diffX == 2 &&  is_king_in_check(gui, is_white) == 0)
+	{
+		printf("King not in check\n");
+	 	if (game.white_to_play && (game.white_can_castle_king_side || game.white_can_castle_queen_side))
+			return 2;
+		if (game.white_to_play == 0 && (game.black_can_castle_king_side || game.black_can_castle_queen_side))
+			return 2;
+		return (0); //Cannot castle
+	}
+	else
+	{
+		return 0;
+	} 
 }
 
 int move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square)
@@ -219,23 +229,19 @@ int move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square)
 		return 0;
 	if ((start_square->status & (PAWN | BISHOP | ROOK | QUEEN | KNIGHT | KING)) == PAWN)
 	{
-		if (!is_valid_pawn_move(gui, start_square, end_square))
-			return 0;
+		return (is_valid_pawn_move(gui, start_square, end_square));
 	}
 	if ((start_square->status & (PAWN | BISHOP | ROOK | QUEEN | KNIGHT | KING)) == BISHOP)
 	{
-		if (!is_valid_bishop_move(gui, start_square, end_square))
-			return 0;
+		return (is_valid_bishop_move(gui, start_square, end_square));
 	}
 	if ((start_square->status & (PAWN | BISHOP | ROOK | QUEEN | KNIGHT | KING)) == ROOK)
 	{
-		if (!is_valid_rook_move(gui, start_square, end_square))
-			return 0;
+		return (is_valid_rook_move(gui, start_square, end_square));
 	}
 	if ((start_square->status & (PAWN | BISHOP | ROOK | QUEEN | KNIGHT | KING)) == QUEEN)
 	{
-		if (!is_valid_bishop_move(gui, start_square, end_square) && !is_valid_rook_move(gui, start_square, end_square))
-			return 0;
+		return (is_valid_bishop_move(gui, start_square, end_square) || is_valid_rook_move(gui, start_square, end_square));
 	}
 	if ((start_square->status & (PAWN | BISHOP | ROOK | QUEEN | KNIGHT | KING)) == KNIGHT)
 	{
@@ -245,7 +251,7 @@ int move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square)
 	{
 		return (is_valid_king_move(gui, start_square, end_square)); 
 	}
-	return 1;
+	return 0;
 }
 
 int move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square)
@@ -258,30 +264,44 @@ int move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square)
 	t_case *temp_end_square = &temp_gui->case_list[get_square_from_xy(end_square->startX, end_square->startY)];	
 	if ((r = move_is_conform(temp_gui, temp_start_square, temp_end_square)))
 	{
-		printf("Move is conform\n");
+		//print_board_in_term(temp_gui);
+		printf("R %d\n", r);
+		if (r == 2) //king try castling
+		{
+			printf("CAST<li\n");
+			/*if (temp_start_square->startX - temp_end_square->startX > 0)
+			{
+				printf("isok1\n");
+				move_piece(temp_gui, temp_start_square, temp_start_square->case_w);
+				//print_board_in_term(temp_gui);
+				if (is_king_in_check(temp_gui, game.white_to_play) == 1)
+					return (0);
+				move_piece(temp_gui, temp_start_square->case_w, temp_start_square);
+			}
+			else
+			{
+				printf("isok2\n");
+				move_piece(temp_gui, temp_start_square, temp_start_square->case_e);
+				if (is_king_in_check(temp_gui, game.white_to_play) == 1)
+					return (0);
+				move_piece(temp_gui, temp_start_square->case_e, temp_start_square);
+			}*/
+		}
+		move_piece(temp_gui, temp_start_square, temp_end_square);
 
-		//ft_memcpy(temp_gui, gui, sizeof(t_gui));
-
-		//t_case *temp_end_square = malloc(sizeof(t_case));
-		/*memcpy(temp_start_square, start_square, sizeof(t_case));
-		memcpy(temp_end_square, end_square, sizeof(t_case));
-		&temp_gui->case_list[get_square_from_xy(start_square->startX, start_square->startY)] = temp_start_square;
-		&temp_gui->case_list[get_square_from_xy(end_square->startX, end_square->startY)] = temp_end_square;*/
-		move(temp_gui, temp_start_square, temp_end_square);
-
-
-		/*printf("TEMP BOARD\n");
-		print_board_in_term(temp_gui);
-		printf("No temp\n");
-		print_board_in_term(gui);*/
 		if (is_king_in_check(temp_gui, game.white_to_play) == 1)
 		{	
-			printf("cannot move\n");
+			print_board_in_term(temp_gui);
 			free(temp_gui);
-			return (r);
+			return (0);
 		}
-		move_is_conform(gui, start_square, end_square); //On effectue le rock
+		/*move_is_conform(gui, start_square, end_square); //On effectue le rock
 		printf("Move is valid\n");
+		if (game.white_to_play)
+		{
+			game.white_can_castle_queen_side = 0;
+			game.white_can_castle_king_side = 0;
+		}*/
 		free(temp_gui->case_list);
 		free(temp_gui);
 		return (r);
@@ -289,7 +309,7 @@ int move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square)
 	return (r);
 }
 
-int	check_rock(t_gui *gui, t_case *start_square, t_case *end_square)
+int	check_castling(t_gui *gui, t_case *start_square, t_case *end_square)
 {
 
 	int diffX = abs(end_square->startX - start_square->startX) / 100;
@@ -298,29 +318,31 @@ int	check_rock(t_gui *gui, t_case *start_square, t_case *end_square)
 
 	if (is_white)
         {
+			printf("Statusssss %d, %d\n", gui->case_list[61].status,gui->case_list[62].status);
             if (end_square->startX > start_square->startX && game.white_can_castle_king_side &&
                 gui->case_list[61].status == EMPTY && gui->case_list[62].status == EMPTY)
             {
-				move(gui, &gui->case_list[63], &gui->case_list[61]); // Move rook
+				move_piece(gui, &gui->case_list[63], &gui->case_list[61]); // Move rook
 				game.white_can_castle_queen_side = 0;
 				game.white_can_castle_king_side = 0;
                 return 2; // Roque côté roi pour les blancs
             }
             else if (end_square->startX < start_square->startX && game.white_can_castle_queen_side &&
-                     gui->case_list[59].status == EMPTY && gui->case_list[58].status == EMPTY && gui->case_list[59].status == EMPTY && gui->case_list[3].status == EMPTY)
+                     gui->case_list[59].status == EMPTY && gui->case_list[58].status == EMPTY && gui->case_list[57].status == EMPTY)
             {
-				move(gui, &gui->case_list[56], &gui->case_list[59]);// Move rook
+				move_piece(gui, &gui->case_list[56], &gui->case_list[59]);// Move rook
 				game.white_can_castle_queen_side = 0;
 				game.white_can_castle_king_side = 0;
                 return 3; // Roque côté dame pour les blancs
             }
+			else return -1;
         }
         else
         {
             if (end_square->startX > start_square->startX && game.black_can_castle_king_side &&
                 gui->case_list[5].status == EMPTY && gui->case_list[6].status == EMPTY)
             {
-				move(gui, &gui->case_list[7], &gui->case_list[5]); // Move rook
+				move_piece(gui, &gui->case_list[7], &gui->case_list[5]); // Move rook
 				game.black_can_castle_queen_side = 0;
 				game.black_can_castle_king_side = 0;
                 return 4; // Roque côté roi pour les noirs
@@ -328,23 +350,22 @@ int	check_rock(t_gui *gui, t_case *start_square, t_case *end_square)
             else if (end_square->startX < start_square->startX && game.black_can_castle_queen_side &&
                     gui->case_list[1].status == EMPTY && gui->case_list[2].status == EMPTY && gui->case_list[3].status == EMPTY)
             {
-				move(gui, &gui->case_list[0], &gui->case_list[3]); // Move rook
+				move_piece(gui, &gui->case_list[0], &gui->case_list[3]); // Move rook
 				game.black_can_castle_queen_side = 0;
 				game.black_can_castle_king_side = 0;
                 return 5; // Roque côté dame pour les noirs
             }
+			else return -2;
         }
 }
 
 int try_to_move(t_gui *gui, t_case *start_square, t_case *end_square)
 {
-
-    printf("Start Square %d, End square %d, King is in check %d\n", get_square_from_xy(start_square->startX, start_square->startY), get_square_from_xy(end_square->startX, end_square->startY), is_king_in_check(gui, game.white_to_play));
-    int	r;
-
-    if ((r = move_is_valid(gui, start_square, end_square)))
-    {
-        // Mise à jour de la cible en passant avant d'appeler la fonction move
+    //printf("Start Square %d, End square %d, King is in check %d Can castling %d, %d, %d, %d\n", get_square_from_xy(start_square->startX, start_square->startY), get_square_from_xy(end_square->startX, end_square->startY), is_king_in_check(gui, game.white_to_play), game.white_can_castle_king_side, game.white_can_castle_queen_side, game.black_can_castle_king_side, game.black_can_castle_queen_side);
+    int	r =  move_is_valid(gui, start_square, end_square);
+    if (r) // move is valid
+    {	
+		// Mise à jour de la cible en passant avant d'appeler la fonction move
         if ((start_square->status & (PAWN | BISHOP | ROOK | QUEEN | KNIGHT | KING)) == PAWN && abs((end_square->startY - start_square->startY) / 100) == 2)
         {
             game.en_passant_target = (start_square->startY > end_square->startY) ? end_square->case_n : end_square->case_s;
@@ -353,11 +374,10 @@ int try_to_move(t_gui *gui, t_case *start_square, t_case *end_square)
         {
             game.en_passant_target = NULL;
         }
-
-        // Appliquer le mouvement sur la structure principale 'gui'
-        move(gui, start_square, end_square);
 		if (r == 2)
-			printf("Check rock %d\n", check_rock(gui, start_square, end_square));
+			printf("Check rock %d\n", check_castling(gui, start_square, end_square));
+		// Appliquer le mouvement sur la structure principale 'gui'
+        move_piece(gui, start_square, end_square);
 		if (game.white_to_play == 0)
             game.white_to_play = 1;
         else
@@ -367,5 +387,3 @@ int try_to_move(t_gui *gui, t_case *start_square, t_case *end_square)
     }
     return r;
 }
-
-
