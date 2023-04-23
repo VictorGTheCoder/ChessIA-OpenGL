@@ -20,6 +20,7 @@ On Debian-based systems (like Ubuntu), you can install the required packages usi
 sudo apt-get update
 sudo apt-get install build-essential
 sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev freeglut3-dev
+sudo apt-get install libsoil-dev
 ```
 
 ## Compilation and Execution
