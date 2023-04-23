@@ -9,11 +9,8 @@ void draw_chess_piece(GLuint texture, int x, int y, int case_size)
 	glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	
-
-
     glBegin(GL_QUADS);
     glTexCoord2f(0, 1); glVertex2i(x, BOARD_SIZE - y - 100);
     glTexCoord2f(1, 1); glVertex2i(x + case_size, BOARD_SIZE - y - 100);

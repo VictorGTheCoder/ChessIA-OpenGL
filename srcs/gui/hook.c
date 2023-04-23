@@ -15,7 +15,7 @@ void mouse_hook(int button, int state, int x, int y)
     {
         int square_n = get_square_from_xy(x, y);
 		t_case *square = &gui->case_list[square_n];
-		printf("isSelected %d, isWhiteToPlay %d, square id %d, pieceIsWhite %d, square status %d, image_status %d\n", game.is_piece_selected, game.white_to_play, square_n, is_white_piece(square), square->status, square->square_img);
+		//printf("isSelected %d, isWhiteToPlay %d, square id %d, pieceIsWhite %d, square status %d, image_status %d\n", game.is_piece_selected, game.white_to_play, square_n, is_white_piece(square), square->status, square->square_img);
 		if (game.is_piece_selected == 1)
 		{
 			//printf("Square selected %d, x:%d, y%d\n", game.is_piece_selected, gui->square_selected->startX, gui->square_selected->startY);

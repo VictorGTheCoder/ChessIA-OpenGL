@@ -3,8 +3,6 @@
 
 extern t_game game;
 
-
-
 void draw_transparent_square(int x, int y, int case_size)
 {
     glEnable(GL_BLEND);
@@ -21,45 +19,44 @@ void draw_transparent_square(int x, int y, int case_size)
     glDisable(GL_BLEND);
 }
 
-
 GLuint get_pieces_image_selected(t_gui *gui, t_case *square)
 {
-		switch (square->status) {
-			case WHITE | ROOK: return gui->pieces.white_rook_s;
-			case WHITE | QUEEN: return gui->pieces.white_queen_s;
-			case WHITE | BISHOP: return gui->pieces.white_bishop_s;
-			case WHITE | PAWN: return gui->pieces.white_pawn_s;
-			case WHITE | KNIGHT: return gui->pieces.white_knight_s;
-			case WHITE | KING: return gui->pieces.white_king_s;
-			case BLACK | ROOK: return gui->pieces.black_rook_s;
-			case BLACK | QUEEN: return gui->pieces.black_queen_s;
-			case BLACK | BISHOP: return gui->pieces.black_bishop_s;
-			case BLACK | PAWN: return gui->pieces.black_pawn_s;
-			case BLACK | KNIGHT: return gui->pieces.black_knight_s;
-			case BLACK | KING: return gui->pieces.black_king_s;
-			case EMPTY: return 0;
-			default: return 0;
-		}
+    switch (square->status) {
+        case WHITE | ROOK: return gui->pieces.white_rook_s;
+        case WHITE | QUEEN: return gui->pieces.white_queen_s;
+        case WHITE | BISHOP: return gui->pieces.white_bishop_s;
+        case WHITE | PAWN: return gui->pieces.white_pawn_s;
+        case WHITE | KNIGHT: return gui->pieces.white_knight_s;
+        case WHITE | KING: return gui->pieces.white_king_s;
+        case BLACK | ROOK: return gui->pieces.black_rook_s;
+        case BLACK | QUEEN: return gui->pieces.black_queen_s;
+        case BLACK | BISHOP: return gui->pieces.black_bishop_s;
+        case BLACK | PAWN: return gui->pieces.black_pawn_s;
+        case BLACK | KNIGHT: return gui->pieces.black_knight_s;
+        case BLACK | KING: return gui->pieces.black_king_s;
+        case EMPTY: return 0;
+        default: return 0;
+    }
 }
 
 GLuint get_pieces_image(t_gui *gui, t_case *square)
 {
-		switch (square->status) {
-			case WHITE | ROOK: return gui->pieces.white_rook;
-			case WHITE | QUEEN: return gui->pieces.white_queen;
-			case WHITE | BISHOP: return gui->pieces.white_bishop;
-			case WHITE | PAWN: return gui->pieces.white_pawn;
-			case WHITE | KNIGHT: return gui->pieces.white_knight;
-			case WHITE | KING: return gui->pieces.white_king;
-			case BLACK | ROOK: return gui->pieces.black_rook;
-			case BLACK | QUEEN: return gui->pieces.black_queen;
-			case BLACK | BISHOP: return gui->pieces.black_bishop;
-			case BLACK | PAWN: return gui->pieces.black_pawn;
-			case BLACK | KNIGHT: return gui->pieces.black_knight;
-			case BLACK | KING: return gui->pieces.black_king;
-			case EMPTY: return 0;
-			default: return 0;
-		}
+    switch (square->status) {
+        case WHITE | ROOK: return gui->pieces.white_rook;
+        case WHITE | QUEEN: return gui->pieces.white_queen;
+        case WHITE | BISHOP: return gui->pieces.white_bishop;
+        case WHITE | PAWN: return gui->pieces.white_pawn;
+        case WHITE | KNIGHT: return gui->pieces.white_knight;
+        case WHITE | KING: return gui->pieces.white_king;
+        case BLACK | ROOK: return gui->pieces.black_rook;
+        case BLACK | QUEEN: return gui->pieces.black_queen;
+        case BLACK | BISHOP: return gui->pieces.black_bishop;
+        case BLACK | PAWN: return gui->pieces.black_pawn;
+        case BLACK | KNIGHT: return gui->pieces.black_knight;
+        case BLACK | KING: return gui->pieces.black_king;
+        case EMPTY: return 0;
+        default: return 0;
+    }
 }
 
 int is_white_piece(t_case *square)
@@ -117,9 +114,6 @@ void case_selected(t_gui *gui, t_case *square)
 
     glutPostRedisplay();
 }
-
-
-
 
 int		get_square_from_xy(int x, int y)
 {

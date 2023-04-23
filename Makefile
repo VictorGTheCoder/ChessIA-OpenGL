@@ -1,7 +1,7 @@
 NAME = ChessAI
 
 # Sources
-SRCS = $(addprefix srcs/, main.c gui/board.c gui/gl_init.c utils/board_utils.c utils/move_utils.c utils/utils.c game/move.c gui/hook.c)
+SRCS = $(addprefix srcs/, main.c gui/board.c gui/gl_init.c utils/board_utils.c utils/move_utils.c utils/utils.c game/move.c gui/hook.c IA/process.c)
 
 OBJS = ${SRCS:.c=.o}
 
@@ -22,7 +22,7 @@ LIBS = -L $(LIBFT_DIR) -lft -lGL -lGLU -lglut -lSOIL
 
 $(NAME): $(OBJS)
 	make -C includes/libft
-	$(CC) $(CFLAGS) $(OBJS) $(INCL) $(LIBS) -fsanitize=address -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) $(INCL) $(LIBS) -o $(NAME)
 
 all: ${NAME}
 

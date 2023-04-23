@@ -80,6 +80,54 @@ void init_squares(t_gui *gui)
 
 }
 
+
+int count_possible_moves(t_gui *gui, int depth) {
+    if (depth == 0) {
+        return 1;
+    }
+
+    int count = 0;
+
+    for (int x_start = 0; x_start < 8; x_start++) {
+        for (int y_start = 0; y_start < 8; y_start++) {
+            t_case *start_square = &gui->case_list[y_start * 8 + x_start];
+
+            // Vérifier si la case contient une pièce de l'équipe actuelle
+            if (is_white_piece(start_square) == game.white_to_play) {
+                continue;
+            }
+
+            for (int x_end = 0; x_end < 8; x_end++) {
+                for (int y_end = 0; y_end < 8; y_end++) {
+                    t_case *end_square = &gui->case_list[y_end * 8 + x_end];
+
+                    if (move_is_valid(gui, start_square, end_square)) {
+                        // Créer une copie profonde de la structure t_gui
+                        t_gui *cloned_gui = clone_t_gui(gui);
+
+                        // Simuler le coup
+                        move_piece(cloned_gui, &cloned_gui->case_list[y_start * 8 + x_start], &cloned_gui->case_list[y_end * 8 + x_end]);
+
+                        // Passer au joueur suivant
+                        game.white_to_play = !game.white_to_play;
+
+                        // Appeler récursivement avec une profondeur réduite
+                        count += count_possible_moves(cloned_gui, depth - 1);
+
+                        // Restaurer l'état du jeu
+                        game.white_to_play = !game.white_to_play;
+
+                        // Libérer la mémoire allouée pour la copie profonde
+                        free(cloned_gui);
+                    }
+                }
+            }
+        }
+    }
+
+    return count;
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -101,6 +149,7 @@ int main(int argc, char *argv[])
 	glutDisplayFunc(display_board);
 	glutMouseFunc(mouse_hook);
 	glutKeyboardFunc(key_hook);
+	//printf("Moves %d\n", count_possible_moves(gui, 3));
     glutMainLoop();
     free(gui);
 	free(gui->case_list);

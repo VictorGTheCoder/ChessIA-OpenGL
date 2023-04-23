@@ -9,7 +9,7 @@
 # include "square.h"
 # include <SOIL/SOIL.h>
 # include <string.h>
-
+# include <time.h>
 # define BLACK_COLOR 0x8B5A2B
 # define WHITE_COLOR 0xF5DEB3
 
@@ -26,7 +26,6 @@
 
 # define BLACK 0b01000
 # define WHITE 0b10000
-
 
 typedef struct s_pieces
 {
@@ -105,6 +104,12 @@ typedef struct s_gui
 	t_case		*case_list;
 }	t_gui;
 
+typedef struct {
+    t_case *start_square;
+    t_case *end_square;
+	int		score;
+} t_move;
+
 void	init(t_gui *gui);
 void	init_game(void);
 void	init_gui(t_gui *gui);
@@ -131,7 +136,13 @@ void	print_board_in_term(t_gui *gui);
 t_gui	*clone_t_gui(t_gui *gui);
 void	draw_pieces_from_case_list(t_gui *gui);
 
+int is_square_attacked(t_gui *gui, t_case *square);
+void move_piece(t_gui *gui, t_case *start_square, t_case *end_square);
+void random_black_move(t_gui *gui);
 void	display_board(void);
+int has_valid_moves(t_gui *gui, int is_white);
+void process_AI(t_gui *gui);
+void generate_valid_moves(t_gui *gui, int is_white, t_move *valid_moves, int *move_count);
 
 extern t_game game;
 extern t_gui *gui;

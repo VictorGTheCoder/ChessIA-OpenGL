@@ -4,66 +4,64 @@ extern t_game game;
 
 static void create_case(t_gui *gui)
 {
-    gui->case_list = malloc(64 * sizeof(t_case));
-    t_case  *current_case;
-    for (int x = 0; x < 8; x++)
-    {
-        for (int y = 0; y < 8; y++)
-        {
-            int invertedY = y; // Inversez l'axe des Y ici
-            current_case = &gui->case_list[invertedY * 8 + x];
+	gui->case_list = malloc(64 * sizeof(t_case));
+	t_case  *current_case;
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
+			current_case = &gui->case_list[y * 8 + x];
 
-            current_case->startX = (int) x * (BOARD_SIZE / 8);
-            current_case->startY = (int) y * (BOARD_SIZE / 8);
-            current_case->endX = (int) x * (BOARD_SIZE / 8 + 1);
-            current_case->endY = (int) y * (BOARD_SIZE / 8 + 1);
+			current_case->startX = (int) x * (BOARD_SIZE / 8);
+			current_case->startY = (int) y * (BOARD_SIZE / 8);
+			current_case->endX = (int) x * (BOARD_SIZE / 8 + 1);
+			current_case->endY = (int) y * (BOARD_SIZE / 8 + 1);
 
-            current_case->case_n = (y > 0) ? &gui->case_list[(invertedY - 1) * 8 +  x] : NULL;
-            current_case->case_s = (y < 7) ? &gui->case_list[(invertedY + 1) * 8 + x] : NULL;
-            current_case->case_w = (x > 0) ? &gui->case_list[(invertedY - 1) + 8 * x] : NULL;
-            current_case->case_e = (x < 7) ? &gui->case_list[(invertedY + 1) + 8 * x] : NULL; 
-        }
-    }
+			current_case->case_n = (y > 0) ? &gui->case_list[(y - 1) * 8 +  x] : NULL;
+			current_case->case_s = (y < 7) ? &gui->case_list[(y + 1) * 8 + x] : NULL;
+        	current_case->case_w = (x > 0) ? &gui->case_list[y * 8 + (x - 1)] : NULL;
+            current_case->case_e = (x < 7) ? &gui->case_list[y * 8 + (x + 1)] : NULL;
+		}
+	}
 }
-
 
 GLuint	load_texture(const char* file)
 {
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
 
-    // Set texture parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Set texture parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    int width, height;
-    unsigned char* image = SOIL_load_image(file, &width, &height, 0, SOIL_LOAD_RGBA);
+	int width, height;
+	unsigned char* image = SOIL_load_image(file, &width, &height, 0, SOIL_LOAD_RGBA);
 
-    if (image == NULL)
-    {
-        printf("Failed to load image: %s\n", SOIL_last_result());
-        return 0;
-    }
+	if (image == NULL)
+	{
+		printf("Failed to load image: %s\n", SOIL_last_result());
+		return 0;
+	}
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	GLenum error = glGetError();
-if (error != GL_NO_ERROR)
-{
-    printf("OpenGL error: %d\n", error);
-}
+	if (error != GL_NO_ERROR)
+	{
+		printf("OpenGL error: %d\n", error);
+	}
 
-    SOIL_free_image_data(image);
+	SOIL_free_image_data(image);
 
-    printf("Loaded texture %s with ID %u\n", file, textureID);
-    return textureID;
+	printf("Loaded texture %s with ID %u\n", file, textureID);
+	return textureID;
 }
 
 void	load_textures(t_gui *gui)
 {
-    gui->pieces.white_rook = load_texture("images/white_rook.png");
+	gui->pieces.white_rook = load_texture("images/white_rook.png");
 	gui->pieces.white_knight = load_texture("images/white_knight.png");
 	gui->pieces.white_bishop = load_texture("images/white_bishop.png");
 	gui->pieces.white_queen = load_texture("images/white_queen.png");

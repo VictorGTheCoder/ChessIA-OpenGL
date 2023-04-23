@@ -11,13 +11,13 @@ int is_king_in_check(t_gui *gui, int is_white_king)
         if (is_white_king && gui->case_list[i].status == (WHITE | KING))
         {
             king_square = &gui->case_list[i];
-            printf("Le roi blanc se trouve en %d ou en %d\n", i, get_square_from_xy(king_square->startX, king_square->startY));
+            //printf("Le roi blanc se trouve en %d ou en %d\n", i, get_square_from_xy(king_square->startX, king_square->startY));
             break;
         }
         else if (!is_white_king && gui->case_list[i].status == (BLACK | KING))
         {
             king_square = &gui->case_list[i];
-            printf("Le roi noir se trouve en %d ou en %d\n", i, get_square_from_xy(king_square->startX, king_square->startY));
+            //printf("Le roi noir se trouve en %d ou en %d\n", i, get_square_from_xy(king_square->startX, king_square->startY));
             break;
         }
     }
@@ -31,7 +31,24 @@ int is_king_in_check(t_gui *gui, int is_white_king)
 
             if (move_is_conform(gui, attacker_square, king_square))
             {
-                printf("Case attaquante %d, case du roi %d\n", get_square_from_xy(attacker_square->startX, attacker_square->startY), get_square_from_xy(king_square->startX, king_square->startY));
+                //printf("Case attaquante %d, case du roi %d\n", get_square_from_xy(attacker_square->startX, attacker_square->startY), get_square_from_xy(king_square->startX, king_square->startY));
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+int is_square_attacked(t_gui *gui, t_case *square)
+{
+    for (int i = 0; i < 64; i++)
+    {
+        t_case *attacker_square = &gui->case_list[i];
+        if (is_white_piece(attacker_square) != game.white_to_play) // Si la case contient une pièce de l'adversaire
+        {
+
+            if (move_is_conform(gui, attacker_square, square))
+            {
                 return 1;
             }
         }

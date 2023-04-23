@@ -5,7 +5,6 @@ extern t_game game;
 
 void remove_piece(t_case *square, t_gui *gui)
 {
-
 	square->square_img = 0;
 	square->status = EMPTY;
 }
@@ -18,6 +17,15 @@ void deselect_piece(t_gui *gui, t_case *square)
 void move_piece(t_gui *gui, t_case *start_square, t_case *end_square)
 {
 	// Vörifier si c'est un coup en passant
+	if (get_square_from_xy(end_square->startX, end_square->startY) == 0)
+		game.black_can_castle_queen_side = 0;
+	else if (get_square_from_xy(end_square->startX, end_square->startY) == 7)
+		game.black_can_castle_king_side = 0;
+	else if (get_square_from_xy(end_square->startX, end_square->startY) == 56)
+		game.white_can_castle_queen_side = 0;
+	else if (get_square_from_xy(end_square->startX, end_square->startY) == 63)
+		game.white_can_castle_king_side = 0;
+
 	if ((start_square->status & (PAWN | BISHOP | ROOK | QUEEN | KNIGHT | KING)) == PAWN && end_square == game.en_passant_target) {
 		end_square->status = EMPTY;
 		game.en_passant_target = NULL;
@@ -189,7 +197,7 @@ int is_valid_knight_move(t_gui *gui, t_case *start_square, t_case *end_square)
         // Vürifier si la case d'arrivée est vide ou contient une pièce de l adversaire
         if ((end_square->status & (BLACK | WHITE)) != (start_square->status & (BLACK | WHITE)) || end_square->status == EMPTY)
         {
-			printf("Valide knight move\n");
+			//printf("Valide knight move\n");
             return 1;
         }
     }
@@ -209,11 +217,26 @@ int is_valid_king_move(t_gui *gui, t_case *start_square, t_case *end_square)
     }
 	else if (diffY == 0 && diffX == 2 &&  is_king_in_check(gui, is_white) == 0)
 	{
-		printf("King not in check\n");
-	 	if (game.white_to_play && (game.white_can_castle_king_side || game.white_can_castle_queen_side))
-			return 2;
-		if (game.white_to_play == 0 && (game.black_can_castle_king_side || game.black_can_castle_queen_side))
-			return 2;
+	 	if (game.white_to_play)
+		{
+			if ((end_square->startX > start_square->startX && is_white_piece(start_square->case_e) != 1 && is_square_attacked(gui,start_square->case_e) == 0 && game.white_can_castle_king_side == 1) 
+				|| (end_square->startX < start_square->startX && is_white_piece(start_square->case_w) != 1 && is_square_attacked(gui,start_square->case_w) == 0 && game.white_can_castle_queen_side == 1))
+			{
+				//printf("start square %d, east_square %d\n", get_square_from_xy(start_square->startX, start_square->startY), get_square_from_xy(start_square->case_w->startX, start_square->case_w->startY));
+				//printf("start square %d, end_square %d, east_square %d, is white peace %d\n", get_square_from_xy(start_square->startX, start_square->startY), get_square_from_xy(end_square->startX, end_square->startY), get_square_from_xy(end_square->case_w->startX, end_square->case_w->startY), is_white_piece(start_square->case_e));
+				return 2;
+			}
+		}
+
+		if (game.white_to_play == 0)
+		{
+			if ((end_square->startX > start_square->startX && is_white_piece(start_square->case_e) != 0 && is_square_attacked(gui,start_square->case_e) == 0 && game.black_can_castle_king_side == 1)
+				|| (end_square->startX < start_square->startX && is_white_piece(start_square->case_w) != 0 && is_square_attacked(gui,start_square->case_w) == 0 && game.black_can_castle_queen_side == 1))
+			{
+				//printf("start square %d, end_square %d,  is white peace %d\n", get_square_from_xy(start_square->startX, start_square->startY), get_square_from_xy(end_square->startX, end_square->startY), is_white_piece(start_square->case_e));
+				return 2;
+			}
+		}
 		return (0); //Cannot castle
 	}
 	else
@@ -264,44 +287,14 @@ int move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square)
 	t_case *temp_end_square = &temp_gui->case_list[get_square_from_xy(end_square->startX, end_square->startY)];	
 	if ((r = move_is_conform(temp_gui, temp_start_square, temp_end_square)))
 	{
-		//print_board_in_term(temp_gui);
-		printf("R %d\n", r);
-		if (r == 2) //king try castling
-		{
-			printf("CAST<li\n");
-			/*if (temp_start_square->startX - temp_end_square->startX > 0)
-			{
-				printf("isok1\n");
-				move_piece(temp_gui, temp_start_square, temp_start_square->case_w);
-				//print_board_in_term(temp_gui);
-				if (is_king_in_check(temp_gui, game.white_to_play) == 1)
-					return (0);
-				move_piece(temp_gui, temp_start_square->case_w, temp_start_square);
-			}
-			else
-			{
-				printf("isok2\n");
-				move_piece(temp_gui, temp_start_square, temp_start_square->case_e);
-				if (is_king_in_check(temp_gui, game.white_to_play) == 1)
-					return (0);
-				move_piece(temp_gui, temp_start_square->case_e, temp_start_square);
-			}*/
-		}
 		move_piece(temp_gui, temp_start_square, temp_end_square);
 
 		if (is_king_in_check(temp_gui, game.white_to_play) == 1)
 		{	
-			print_board_in_term(temp_gui);
+			//print_board_in_term(temp_gui);
 			free(temp_gui);
 			return (0);
 		}
-		/*move_is_conform(gui, start_square, end_square); //On effectue le rock
-		printf("Move is valid\n");
-		if (game.white_to_play)
-		{
-			game.white_can_castle_queen_side = 0;
-			game.white_can_castle_king_side = 0;
-		}*/
 		free(temp_gui->case_list);
 		free(temp_gui);
 		return (r);
@@ -318,7 +311,6 @@ int	check_castling(t_gui *gui, t_case *start_square, t_case *end_square)
 
 	if (is_white)
         {
-			printf("Statusssss %d, %d\n", gui->case_list[61].status,gui->case_list[62].status);
             if (end_square->startX > start_square->startX && game.white_can_castle_king_side &&
                 gui->case_list[61].status == EMPTY && gui->case_list[62].status == EMPTY)
             {
@@ -375,13 +367,21 @@ int try_to_move(t_gui *gui, t_case *start_square, t_case *end_square)
             game.en_passant_target = NULL;
         }
 		if (r == 2)
-			printf("Check rock %d\n", check_castling(gui, start_square, end_square));
+		{
+			int cc = check_castling(gui, start_square, end_square);
+			printf("Check rock %d\n", cc);
+			if (cc == -1)
+				return cc;
+		}
 		// Appliquer le mouvement sur la structure principale 'gui'
-        move_piece(gui, start_square, end_square);
-		if (game.white_to_play == 0)
-            game.white_to_play = 1;
-        else
+		move_piece(gui, start_square, end_square);
+		
+		if (game.white_to_play)
+        {
             game.white_to_play = 0;
+            process_AI(gui);
+            game.white_to_play = 1;
+        }
         game.is_piece_selected = 0;
         return 1; // Indique que le mouvement est valide et a été effectué
     }
