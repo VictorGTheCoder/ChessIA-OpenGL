@@ -15,14 +15,14 @@ LIBFT_DIR = includes/libft
 INCL = -I $(LIBFT_DIR) -I/usr/include/SOIL
 
 # Libraries
-LIBS = -L $(LIBFT_DIR) -lft -lGL -lGLU -lglut -lSOIL
+LIBS = -L $(LIBFT_DIR) -lft -lGL -lGLU -lglut -lSOIL -lm
 
 %.o: %.c
 	$(CC) $(CFLAGS) ${INCL} -c $< -o ${<:.c=.o}
 
 $(NAME): $(OBJS)
 	make -C includes/libft
-	$(CC) $(CFLAGS) $(OBJS) $(INCL) $(LIBS) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) $(INCL) $(LIBS) -fsanitize=address -o $(NAME)
 
 all: ${NAME}
 

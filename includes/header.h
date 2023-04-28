@@ -10,6 +10,9 @@
 # include <SOIL/SOIL.h>
 # include <string.h>
 # include <time.h>
+#include <limits.h>
+#include <math.h>
+
 # define BLACK_COLOR 0x8B5A2B
 # define WHITE_COLOR 0xF5DEB3
 
@@ -104,11 +107,15 @@ typedef struct s_gui
 	t_case		*case_list;
 }	t_gui;
 
-typedef struct {
-    t_case *start_square;
-    t_case *end_square;
+typedef struct	s_move
+{
+	t_case		*start_square;
+	t_case		*end_square;
+	int		start_index;
+	int		end_index;
 	int		score;
-} t_move;
+}		t_move;
+
 
 void	init(t_gui *gui);
 void	init_game(void);
