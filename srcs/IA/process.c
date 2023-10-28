@@ -31,37 +31,13 @@ int piece_value(t_case *piece)
 	}
 }
 
-void generate_valid_moves(t_gui *gui, int is_white, t_move *valid_moves, int *move_count)
+int generate_valid_moves(t_game *game, int is_white, t_move *valid_moves)
 {
-    int start_index, end_index;
-    t_case *start_square, *end_square;
+    int moves_count = 0;
+    
 
-    t_gui *temp_gui = clone_t_gui(gui);
 
-    *move_count = 0;
-
-    for (start_index = 0; start_index < 64; start_index++)
-    {
-        start_square = &temp_gui->case_list[start_index];
-
-        if ((is_white_piece(start_square) && is_white) || (is_white_piece(start_square) == 0 && !is_white))
-        {
-            for (end_index = 0; end_index < 64; end_index++)
-            {
-                end_square = &temp_gui->case_list[end_index];
-
-                if (move_is_valid(temp_gui, start_square, end_square))
-                {
-                    valid_moves[*move_count].start_square = &temp_gui->case_list[start_index];
-                    valid_moves[*move_count].end_square = &temp_gui->case_list[end_index];
-                    valid_moves[*move_count].start_index = start_index;
-                    valid_moves[*move_count].end_index = end_index;
-                    valid_moves[*move_count].score += piece_value(end_square);
-                    (*move_count)++;
-                }
-            }
-        }
-    }
+    return (moves_count);
 }
 
 
@@ -77,7 +53,7 @@ int evaluate_board(t_gui *gui)
 	return (total_score);
 }
 
-int minimax(t_gui *gui, int depth, int alpha, int beta, int maximizing_player)
+/*int minimax(t_game *game, int depth, int alpha, int beta, int maximizing_player)
 {
     if (depth == 0 || has_valid_moves(gui, maximizing_player) == 0)
     {
@@ -86,7 +62,7 @@ int minimax(t_gui *gui, int depth, int alpha, int beta, int maximizing_player)
 
     t_move valid_moves[64 * 64];
     int move_count;
-    generate_valid_moves(gui, maximizing_player, valid_moves, &move_count);
+    generate_valid_moves(game, maximizing_player, valid_moves, &move_count);
 
     if (maximizing_player)
     {
@@ -122,17 +98,14 @@ int minimax(t_gui *gui, int depth, int alpha, int beta, int maximizing_player)
         }
         return min_eval;
     }
-}
+}*/
 
-void process_AI(t_gui *gui)
-{
-    t_move valid_moves[64 * 64];
-    t_gui *temp_gui = clone_t_gui(gui);
-    int move_count;
-    generate_valid_moves(temp_gui, 0, valid_moves, &move_count);
+void process_AI(t_game *game) {
+    /*t_move valid_moves[64 * 64];
+    t_game *temp_game = clone_t_game(game);
+    int move_count = generate_valid_moves(temp_game, 0, valid_moves);
 
-    if (move_count == 0)
-    {
+    if (move_count == 0) {
         printf("No valid moves, game over\n");
         return;
     }
@@ -140,30 +113,29 @@ void process_AI(t_gui *gui)
     int max_eval = INT_MIN;
     t_move best_move;
 
-    for (int i = 0; i < move_count; i++)
-    {
-        temp_gui = clone_t_gui(gui);
-        move_piece(temp_gui, valid_moves[i].start_square, valid_moves[i].end_square);
-        int eval = minimax(temp_gui, 1, INT_MIN, INT_MAX, 1); // Vous pouvez ajuster la profondeur ici
-        if (eval > max_eval)
-        {
+    for (int i = 0; i < move_count; i++) {
+        temp_game = clone_t_game(game); // Clone the game state including bitboards
+        apply_move_to_bitboards(temp_game->bitboards, valid_moves[i].start_index, valid_moves[i].end_index);
+        int eval = minimax(temp_game, 1, INT_MIN, INT_MAX, 1); // Adjust depth as necessary
+        if (eval > max_eval) {
             max_eval = eval;
             best_move = valid_moves[i];
         }
+        free_t_game(temp_game); // Clean up the cloned game state
     }
-    printf("move piece\n");
+    printf("Move piece from %d to %d\n", best_move.start_index, best_move.end_index);
 
-    t_case *gui_start_square = &gui->case_list[best_move.start_index];
-    t_case *gui_end_square = &gui->case_list[best_move.end_index];
-
-    move_piece(gui, gui_start_square, gui_end_square);
+    // Apply the best move found to the original game state
+    apply_move_to_bitboards(game->bitboards, best_move.start_index, best_move.end_index);*/
 }
 
 
 
 
 
-void random_black_move(t_gui *gui)
+
+
+/*void random_black_move(t_gui *gui)
 {
 	int start_index, end_index;
 	t_case *start_square, *end_square;
@@ -190,4 +162,4 @@ void random_black_move(t_gui *gui)
 	}
 
 	move_piece(gui, start_square, end_square);
-}
+}*/

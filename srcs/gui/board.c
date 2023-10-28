@@ -33,7 +33,7 @@ void draw_pieces_from_case_list(t_gui *gui)
         {
             draw_chess_piece(square->square_img, square->startX, square->startY, case_size);
 
-            if (game.is_piece_selected && gui->square_selected == square)
+            if (game->is_piece_selected && gui->square_selected == square)
             {
                 draw_transparent_square(square->startX, square->startY, case_size);
             }

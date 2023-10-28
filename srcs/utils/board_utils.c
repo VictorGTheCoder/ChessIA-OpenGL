@@ -1,8 +1,6 @@
 
 #include "../../includes/header.h"
 
-extern t_game game;
-
 void draw_transparent_square(int x, int y, int case_size)
 {
     glEnable(GL_BLEND);
@@ -89,29 +87,28 @@ void draw_highlighted_piece(GLuint texture, int x, int y, int case_size)
 
 void case_selected(t_gui *gui, t_case *square)
 {
-    if (game.is_piece_selected && is_white_piece(square) == game.white_to_play)
+    if (game->is_piece_selected && is_white_piece(square) == game->white_to_play)
     {
         // Désélectionnez la pièce si la même couleur est cliquée
-        game.is_piece_selected = 0;
+        game->is_piece_selected = 0;
         gui->square_selected = NULL;
     }
-    else if (is_white_piece(square) == game.white_to_play)
+    else if (is_white_piece(square) == game->white_to_play)
     {
         // Sélectionnez la pièce si elle est de la couleur appropriée
-        game.is_piece_selected = 1;
+        game->is_piece_selected = 1;
         gui->square_selected = square;
     }
-    else if (game.is_piece_selected)
+    else if (game->is_piece_selected)
     {
         // Effectuez le mouvement si une pièce est sélectionnée et si la case cliquée est vide ou a une pièce de couleur opposée
         gui->square_selected->square_img = 0; // Enlevez la pièce de la case d'origine
         square->square_img = get_pieces_image(gui, gui->square_selected); // Placez la pièce sur la nouvelle case
 
-        game.is_piece_selected = 0;
+        game->is_piece_selected = 0;
         gui->square_selected = NULL;
-        game.white_to_play = !game.white_to_play; // Changez le joueur actuel
+        game->white_to_play = !game->white_to_play; // Changez le joueur actuel
     }
-
     glutPostRedisplay();
 }
 

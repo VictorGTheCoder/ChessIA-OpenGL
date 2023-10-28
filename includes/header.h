@@ -30,6 +30,8 @@
 # define BLACK 0b01000
 # define WHITE 0b10000
 
+#define COLOR_MASK 0b00111
+
 typedef struct s_pieces
 {
 	GLuint empty;
@@ -76,6 +78,32 @@ typedef	struct s_case
 	struct s_case *case_e;
 }	t_case;
 
+typedef uint64_t Bitboard;
+
+
+typedef struct s_bb
+{
+    Bitboard white_pawns;
+    Bitboard white_knights;
+    Bitboard white_bishops;
+    Bitboard white_rooks;
+    Bitboard white_queens;
+    Bitboard white_king;
+    Bitboard white_pieces;
+
+    Bitboard black_pawns;
+    Bitboard black_knights;
+    Bitboard black_bishops;
+    Bitboard black_rooks;
+    Bitboard black_queens;
+    Bitboard black_king;
+    Bitboard black_pieces;
+
+
+	Bitboard black_attack_square;
+	Bitboard white_attack_square;
+}	t_bb;
+
 typedef struct s_game
 {
 	t_case       *en_passant_target;
@@ -89,9 +117,11 @@ typedef struct s_game
 	int white_can_castle_king_side;
 	int black_can_castle_queen_side;
 	int black_can_castle_king_side;
-
 	int is_piece_selected;
+
+	t_bb *bitboards;
 }	t_game;
+
 
 typedef struct s_gui
 {
@@ -129,11 +159,11 @@ void    case_selected(t_gui *gui, t_case *square);
 void	key_hook(unsigned char key, int x, int y);
 void	mouse_hook(int button, int state, int x, int y);
 
-int		is_king_in_check(t_gui *gui, int is_white_king);
-int		try_to_move(t_gui *gui, t_case *start_square, t_case *end_square);
-int		move_is_valid(t_gui *gui, t_case *start_square, t_case *end_square);
+/*int		is_king_in_check(t_gui *gui, int is_white_king);
+int		move_is_valid(t_game *game, int start_square, int end_square);
+int		move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square);*/
+int		try_to_move(int start_square, int end_square);
 int		is_white_piece(t_case *square);
-int		move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square);
 GLuint	get_pieces_image(t_gui *gui, t_case *square);
 void	deselect_piece(t_gui *gui, t_case *square);
 void	load_textures(t_gui *gui);
@@ -148,10 +178,24 @@ void move_piece(t_gui *gui, t_case *start_square, t_case *end_square);
 void random_black_move(t_gui *gui);
 void	display_board(void);
 int has_valid_moves(t_gui *gui, int is_white);
-void process_AI(t_gui *gui);
-void generate_valid_moves(t_gui *gui, int is_white, t_move *valid_moves, int *move_count);
+void process_AI(t_game *game);
+int generate_valid_moves(t_game *game, int is_white, t_move *valid_moves);
 
-extern t_game game;
+
+void initialize_bitboards();
+int get_bit(Bitboard board, int index);
+void set_bit(Bitboard *board, int index, int value);
+void move_piece_bb(Bitboard *start_board, Bitboard *end_board, int start_index, int end_index);
+void print_bitboard(Bitboard board);
+void print_combined_bitboard(t_bb *bitboards);
+t_game *clone_t_game(t_game *game);
+void free_t_game(t_game *game);
+
+
+int is_move_legal(int start_square, int end_case);
+void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end_square);
+
+extern t_game *game;
 extern t_gui *gui;
 
 #endif

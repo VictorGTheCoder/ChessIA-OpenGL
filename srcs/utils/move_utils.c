@@ -1,7 +1,7 @@
 
 #include "../../includes/header.h"
 
-int is_king_in_check(t_gui *gui, int is_white_king)
+/*int is_king_in_check(t_gui *gui, int is_white_king)
 {
     t_case *king_square = NULL;
 
@@ -26,7 +26,7 @@ int is_king_in_check(t_gui *gui, int is_white_king)
     for (int i = 0; i < 64; i++)
     {
         t_case *attacker_square = &gui->case_list[i];
-        if (is_white_piece(attacker_square) != game.white_to_play) // Si la case contient une pièce de l'adversaire
+        if (is_white_piece(attacker_square) != game->white_to_play) // Si la case contient une pièce de l'adversaire
         {
 
             if (move_is_conform(gui, attacker_square, king_square))
@@ -44,7 +44,7 @@ int is_square_attacked(t_gui *gui, t_case *square)
     for (int i = 0; i < 64; i++)
     {
         t_case *attacker_square = &gui->case_list[i];
-        if (is_white_piece(attacker_square) != game.white_to_play) // Si la case contient une pièce de l'adversaire
+        if (is_white_piece(attacker_square) != game->white_to_play) // Si la case contient une pièce de l'adversaire
         {
 
             if (move_is_conform(gui, attacker_square, square))
@@ -54,7 +54,7 @@ int is_square_attacked(t_gui *gui, t_case *square)
         }
     }
     return 0;
-}
+}*/
 
 
 void print_board_in_term(t_gui *gui)

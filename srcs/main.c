@@ -1,6 +1,6 @@
 #include "../includes/header.h"
 
-t_game game;
+t_game *game;
 t_gui *gui;
 
 void	init_openGL(void)
@@ -81,7 +81,7 @@ void init_squares(t_gui *gui)
 }
 
 
-int count_possible_moves(t_gui *gui, int depth) {
+/*int count_possible_moves(t_gui *gui, int depth) {
     if (depth == 0) {
         return 1;
     }
@@ -93,7 +93,7 @@ int count_possible_moves(t_gui *gui, int depth) {
             t_case *start_square = &gui->case_list[y_start * 8 + x_start];
 
             // Vérifier si la case contient une pièce de l'équipe actuelle
-            if (is_white_piece(start_square) == game.white_to_play) {
+            if (is_white_piece(start_square) == game->white_to_play) {
                 continue;
             }
 
@@ -109,13 +109,13 @@ int count_possible_moves(t_gui *gui, int depth) {
                         move_piece(cloned_gui, &cloned_gui->case_list[y_start * 8 + x_start], &cloned_gui->case_list[y_end * 8 + x_end]);
 
                         // Passer au joueur suivant
-                        game.white_to_play = !game.white_to_play;
+                        game->white_to_play = !game->white_to_play;
 
                         // Appeler récursivement avec une profondeur réduite
                         count += count_possible_moves(cloned_gui, depth - 1);
 
                         // Restaurer l'état du jeu
-                        game.white_to_play = !game.white_to_play;
+                        game->white_to_play = !game->white_to_play;
 
                         // Libérer la mémoire allouée pour la copie profonde
                         free(cloned_gui);
@@ -126,16 +126,19 @@ int count_possible_moves(t_gui *gui, int depth) {
     }
 
     return count;
-}
+}*/
 
 int main(int argc, char *argv[])
 {
-
     gui = malloc(sizeof(t_gui)); 
+
 
     printf("INIT\n");
 	init_game();
 	init_gui(gui);
+    initialize_bitboards(game);
+    print_bitboard(game->bitboards->white_pieces);
+    printf("---------------\n");
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);

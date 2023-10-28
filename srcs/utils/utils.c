@@ -71,28 +71,5 @@ t_gui *clone_t_gui(t_gui *src)
     return dst;
 }
 
-int has_valid_moves(t_gui *gui, int is_white)
-{
-    int start_index, end_index;
-    t_case *start_square, *end_square;
 
-    for (start_index = 0; start_index < 64; start_index++)
-    {
-        start_square = &gui->case_list[start_index];
 
-        if ((is_white_piece(start_square) && is_white) || (is_white_piece(start_square) == 0 && !is_white))
-        {
-            for (end_index = 0; end_index < 64; end_index++)
-            {
-                end_square = &gui->case_list[end_index];
-
-                if (move_is_valid(gui, start_square, end_square))
-                {
-                    return 1;
-                }
-            }
-        }
-    }
-
-    return 0;
-}

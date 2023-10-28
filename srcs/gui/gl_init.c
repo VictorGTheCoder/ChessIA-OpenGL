@@ -1,6 +1,5 @@
 #include "../../includes/header.h"
 
-extern t_game game;
 
 static void create_case(t_gui *gui)
 {
@@ -77,15 +76,16 @@ void	load_textures(t_gui *gui)
 }
 
 void	init_game(void)
-{
-	game.black_can_castle_king_side = 1;
-	game.black_can_castle_queen_side = 1;
-	game.white_can_castle_king_side = 1;
-	game.white_can_castle_queen_side = 1;
-	game.white_is_check = 0;
-	game.black_is_check = 0;
-	game.white_to_play = 1;
-	game.en_passant_target = NULL;
+{	
+	game = malloc(sizeof(t_game));
+	game->black_can_castle_king_side = 1;
+	game->black_can_castle_queen_side = 1;
+	game->white_can_castle_king_side = 1;
+	game->white_can_castle_queen_side = 1;
+	game->white_is_check = 0;
+	game->black_is_check = 0;
+	game->white_to_play = 1;
+	game->en_passant_target = NULL;
 }
 
 void	init_gui(t_gui *gui)
