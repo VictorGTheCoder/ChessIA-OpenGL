@@ -100,8 +100,8 @@ typedef struct s_bb
     Bitboard black_pieces;
 
 
-	Bitboard black_attack_square;
-	Bitboard white_attack_square;
+	Bitboard black_attacks;
+	Bitboard white_attacks;
 }	t_bb;
 
 typedef struct s_game
@@ -194,6 +194,8 @@ void free_t_game(t_game *game);
 
 int is_move_legal(int start_square, int end_case);
 void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end_square);
+
+uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position);
 
 extern t_game *game;
 extern t_gui *gui;

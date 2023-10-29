@@ -1,4 +1,6 @@
 #include "../../includes/header.h"
+void update_attack_bitboards(t_bb *bit_boards);
+
 /* BOARD INDEX
 0  1  2  3  4  5  6  7
 8  9  10 11 12 13 14 15
@@ -11,7 +13,8 @@
 */
 
 void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end_square)
-{    
+{
+    update_attack_bitboards(bitboards);
     Bitboard *bb;
     switch (piece_type)
     {
@@ -45,8 +48,16 @@ void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end
         case QUEEN | BLACK:
             bb = &bitboards->black_queens;
             break;
+        case KNIGHT | WHITE:
+            bb = &bitboards->white_knights;
+            break;
+        case KNIGHT | BLACK:
+            bb = &bitboards->black_knights;
+            break;
+        default:
+            printf("ERROR THERE IS NO MATCHING TYPE\n");
+            exit(EXIT_FAILURE);
     }
-
 
     uint64_t start_mask = 1ULL << (start_square);
     uint64_t end_mask = 1ULL << (end_square);
@@ -61,8 +72,8 @@ void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end
     bitboards->black_pieces =  bitboards->black_pawns |  bitboards->black_knights | 
                                 bitboards->black_bishops |  bitboards->black_rooks | 
                                 bitboards->black_queens |  bitboards->black_king;
+    update_attack_bitboards(bitboards);
 }
-
 
 void print_bitboard(uint64_t bitboard) {
     for (int rank = 0; rank < 8; rank++) {
@@ -97,6 +108,30 @@ void print_combined_bitboard(t_bb *bitboards) {
 
 
 
+void update_attack_bitboards(t_bb *bitboards) {
+    // Clear previous attack bitboards
+    bitboards->white_attacks = 0;
+    bitboards->black_attacks = 0;
+
+    // Updating the attack bitboards for each piece type and color
+    
+    // WHITE
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, PAWN,  bitboards->white_pawns);
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, KNIGHT,  bitboards->white_knights);
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, BISHOP, bitboards->white_bishops);
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, ROOK, bitboards->white_rooks);
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, QUEEN, bitboards->white_queens);
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, KING, bitboards->white_king);
+    
+    // BLACK
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, PAWN, bitboards->black_pawns);
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, KNIGHT, bitboards->black_knights);
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, BISHOP, bitboards->black_bishops);
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, ROOK, bitboards->black_rooks);
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, QUEEN, bitboards->black_queens);
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, KING, bitboards->black_king);
+}
+
 void initialize_bitboards() {
     game->bitboards = malloc(sizeof(t_bb));
     // Pawns
@@ -123,6 +158,10 @@ void initialize_bitboards() {
     game->bitboards->black_king = 0x0000000000000008;
     game->bitboards->white_king = 0x0800000000000000;
 
+    game->bitboards->black_attacks = 0x0000000000000000;
+    game->bitboards->white_attacks = 0x0000000000000000;
+
+
     // All white pieces
     game->bitboards->white_pieces = game->bitboards->white_pawns | 
                                    game->bitboards->white_knights | 
@@ -138,9 +177,9 @@ void initialize_bitboards() {
                                    game->bitboards->black_rooks | 
                                    game->bitboards->black_queens | 
                                    game->bitboards->black_king;
+
+    update_attack_bitboards(game->bitboards);
 }
-
-
 
 int get_bit(Bitboard board, int index) {
     return (board >> index) & 1;
@@ -153,14 +192,11 @@ void set_bit(Bitboard *board, int index, int value) {
         *board &= ~(1ULL << index);
 }
 
-
 void move_piece_bb(Bitboard *start_board, Bitboard *end_board, int start_index, int end_index)
 {
     set_bit(end_board, end_index, 1);
     set_bit(start_board, start_index, 0);
 }
-
-
 
 t_game *clone_t_game(t_game *game) {
     t_game *new_game = malloc(sizeof(t_game));
@@ -168,7 +204,6 @@ t_game *clone_t_game(t_game *game) {
         // Handle memory allocation error
         return NULL;
     }
-
     return new_game;
 }
 
@@ -176,5 +211,3 @@ void free_t_game(t_game *game)
 {
     free(game);
 }
-
-
