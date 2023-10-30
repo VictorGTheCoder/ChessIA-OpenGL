@@ -146,8 +146,6 @@ int is_legal_king_move(t_game *game, int start_square, int end_square) {
     return 1; // Legal move
 }
 
-
-
 int is_king_in_check(t_game *game, int color) {
     uint64_t king_position;
     
@@ -174,7 +172,6 @@ int is_king_in_check_after_move(t_bb *bb, int piece_type, int start_square, int 
     update_bitboards(bb, piece_type, end_square, start_square);
     return 0;
 }
-
 
 int is_move_legal(int start_square, int end_case)
 {

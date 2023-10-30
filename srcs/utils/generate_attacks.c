@@ -2,32 +2,26 @@
 
 uint64_t get_diagonal_attacks(uint64_t position, uint64_t occupied_squares) {
     uint64_t attacks = 0;
-    int directions[] = {-7, -9, 9, 7}; // NE, NW, SE, SW
+    int directions[] = {7, 9, 9, 7}; // NE, NW, SE, SW
     
     for (int dir = 0; dir < 4; dir++) {
         uint64_t attack_bit = position;
         while (42) {
-			printf("test\n");
-            if (dir < 2) // Moving upwards (NE, NW)
+            if (dir < 2) // NE, NW
+            {
+                attack_bit = (attack_bit >> directions[dir]);
+            }
+            else // SE, SW
+            {
                 attack_bit = (attack_bit << directions[dir]);
-            else // Moving downwards (SE, SW)
-                attack_bit = (attack_bit >> -directions[dir]);
-            
-            // Border and occupancy checks
-            if ((attack_bit & 0xFEFEFEFEFEFEFEFE) == 0 || // Check file H borders
-                (attack_bit & 0x7F7F7F7F7F7F7F7F) == 0 || // Check file A borders
-                (attack_bit & occupied_squares)) {
+            }
+           // Check for border collisions or occupied squares
+            if ((attack_bit & 0xFF818181818181FF) == 0 || (attack_bit & occupied_squares)) {
                 break;
             }
-            
             attacks |= attack_bit;
-            
-            // Additional check to prevent sliding over the edge of the board
-            if ((attack_bit & 0x7F7F7F7F7F7F7F7F) == 0 && (directions[dir] == 7 || directions[dir] == -9) || // Check for left border
-                (attack_bit & 0xFEFEFEFEFEFEFEFE) == 0 && (directions[dir] == 9 || directions[dir] == -7)) { // Check for right border
-                break;
-            }
         }
+        
     }
     
     return attacks;
@@ -73,6 +67,7 @@ uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position) {
 
     switch (piece_type) {
         case PAWN:
+            break;
             if (color == BLACK) {
                 // Move diagonally left
                 temp_positions = (position & 0x7F7F7F7F7F7F7F7FULL) << 9;
@@ -93,6 +88,7 @@ uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position) {
             break;
 
         case KNIGHT:
+            break;
             // Left 2, Up 1
             temp_positions = (position & 0xFCFCFCFCFCFCFCFCULL) << 6;
             attacks |= temp_positions;
@@ -128,13 +124,14 @@ uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position) {
 		case BISHOP:
             // Calculate diagonal attacks from the bishop's position
             // Note: Implement get_diagonal_attacks function that handles obstructions
-            attacks = get_diagonal_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
+            attacks |= get_diagonal_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
             break;
 
         case ROOK:
+            break;
             // Calculate horizontal and vertical attacks from the rook's position
             // Note: Implement get_horizontal_vertical_attacks function that handles obstructions
-            attacks = get_horizontal_vertical_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
+            attacks |= get_horizontal_vertical_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
             break;
     }
 

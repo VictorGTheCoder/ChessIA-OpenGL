@@ -34,3 +34,6 @@ To run the program, use the following command:
 ```bash
 ./ChessAI
 ```
+
+## Source
+I mainly use this website to implement the bitboards https://www.chessprogramming.org/Efficient_Generation_of_Sliding_Piece_Attacks

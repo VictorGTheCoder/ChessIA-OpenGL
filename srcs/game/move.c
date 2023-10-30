@@ -54,7 +54,7 @@ int try_to_move(int start_square, int end_square) {
     {
         
         update_bitboards(game->bitboards, start_case->status, start_square, end_square);
-        print_bitboard(game->bitboards->black_attacks);
+        print_bitboard(game->bitboards->white_attacks);
         
         //print_bitboard(game->bitboards->white_knights);
         //print_combined_bitboard(game->bitboards);
