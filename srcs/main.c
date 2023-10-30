@@ -132,7 +132,13 @@ int main(int argc, char *argv[])
 {
     gui = malloc(sizeof(t_gui)); 
 
-
+    print_bitboard(0x00FEFEFEFEFEFEFEULL);
+    printf("EXAMPLE\n");
+    uint64_t x = 0x0000000000000400ULL;
+    //print_bitboard(x);
+    x = x << 9;
+    printf("--------\n");
+    print_bitboard(x);
     printf("INIT\n");
 	init_game();
 	init_gui(gui);

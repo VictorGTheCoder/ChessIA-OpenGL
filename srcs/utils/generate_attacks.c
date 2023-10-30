@@ -1,73 +1,110 @@
 #include "../../includes/header.h"
 
+//   northwest    north   northeast
+//   NW             N          NE
+//           >>9    >>8    >>7
+//               \  |  /
+//   W       >>1 <-  0 -> <<1    E
+//               /  |  \
+//           <<7   <<8    <<9
+//   SW             S          SE
+//   southwest    south   southeast
+
 uint64_t get_diagonal_attacks(uint64_t position, uint64_t occupied_squares) {
     uint64_t attacks = 0;
-    int directions[] = {7, 9, 9, 7}; // NE, NW, SE, SW
-    
-    for (int dir = 0; dir < 4; dir++) {
-        uint64_t attack_bit = position;
-        while (42) {
-            if (dir < 2) // NE, NW
-            {
-                attack_bit = (attack_bit >> directions[dir]);
+    uint64_t sides = 0xFF818181818181FF;
+    for (uint64_t pos = 1; pos != 0; pos <<= 1) {
+        if ((pos & position) == 0) continue;
+        for (int dir = 0; dir < 4; dir++) {
+            uint64_t attack_bit = pos;
+            while (1) {
+                if (dir == 0) // NE
+                {
+                    if ((pos & 0x80808080808080FFULL)) //Check if pos is at right or top border
+                        break;
+                    attack_bit = (attack_bit >> 7);
+                }
+                else if (dir == 1) // NW
+                {
+                    if ((pos & 0x01010101010101FFULL)) //Check if pos is at left or top border
+                        break;
+                    attack_bit = (attack_bit >> 9);
+                }
+                else if(dir == 2) // SE
+                {
+                    if (pos & 0xFF80808080808080ULL) //Check if pos is at right or bottom border
+                        break;
+                    attack_bit = (attack_bit << 9);
+                }
+                else if (dir == 3) // SW
+                {
+                    if ((pos & 0xFF01010101010101ULL)) //Check if pos is at left or bottom border
+                        break;
+                    attack_bit = (attack_bit << 7);
+                }
+                if ((attack_bit) == 0) break;
+                attacks |= attack_bit;
+                if (attack_bit & occupied_squares) break;
+                if (attack_bit & sides) break;
             }
-            else // SE, SW
-            {
-                attack_bit = (attack_bit << directions[dir]);
-            }
-           // Check for border collisions or occupied squares
-            if ((attack_bit & 0xFF818181818181FF) == 0 || (attack_bit & occupied_squares)) {
-                break;
-            }
-            attacks |= attack_bit;
         }
-        
     }
-    
     return attacks;
 }
+
 
 
 uint64_t get_horizontal_vertical_attacks(uint64_t position, uint64_t occupied_squares) {
     uint64_t attacks = 0;
-    int directions[] = {-8, -1, 1, 8}; // N, W, E, S
-    
-    for (int dir = 0; dir < 4; dir++) {
-        uint64_t attack_bit = position;
-        while (42) {
-            if (directions[dir] == -1 || directions[dir] == 1) // Horizontal (W, E)
-                attack_bit = (directions[dir] == -1) ? (attack_bit << 1) : (attack_bit >> 1);
-            else // Vertical (N, S)
-                attack_bit = (directions[dir] == -8) ? (attack_bit << 8) : (attack_bit >> 8);
-            
-            // Check if move is outside the board or hits an occupied square
-            if ((attack_bit & 0x8080808080808080) == 0 || // Check for file H
-                (attack_bit & 0x0101010101010101) == 0 || // Check for file A
-                (attack_bit & occupied_squares)) {
-                break;
-            }
-            
-            attacks |= attack_bit;
-            
-            // Additional checks for horizontal moves not to cross the file borders
-            if ((attack_bit & 0x8080808080808080) && directions[dir] == 1 || // Right move check
-                (attack_bit & 0x0101010101010101) && directions[dir] == -1) { // Left move check
-                break;
+    uint64_t sides = 0xFF818181818181FF;
+    for (uint64_t pos = 1; pos != 0; pos <<= 1) {
+        if ((pos & position) == 0) continue;
+        
+        for (int dir = 0; dir < 4; dir++) {
+            uint64_t attack_bit = pos;
+            while (1) {
+                if (dir == 0) // E
+                {
+                    if ((pos & 0x8080808080808080ULL))
+                        break;
+                    attack_bit = (attack_bit << 1);
+                }
+                else if (dir == 1) // W
+                {
+                    if ((pos & 0x0101010101010101ULL))
+                        break;
+                    attack_bit = (attack_bit >> 1);
+                }
+                else if (dir == 2) // N
+                {
+                    if ((pos & 0x00000000000000FFULL))
+                        break;
+                    attack_bit = (attack_bit >> 8);
+                }
+                else if (dir == 3) // S
+                {
+                    if ((pos & 0xFF00000000000000ULL))
+                        break;
+                    attack_bit = (attack_bit << 8);
+                }
+                
+                if ((attack_bit) == 0) break;
+                attacks |= attack_bit;
+                if (attack_bit & occupied_squares) break;
+                if (attack_bit & sides) break;
             }
         }
     }
-    
     return attacks;
 }
+
 
 
 uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position) {
     uint64_t attacks = 0;
     uint64_t temp_positions;
-
     switch (piece_type) {
         case PAWN:
-            break;
             if (color == BLACK) {
                 // Move diagonally left
                 temp_positions = (position & 0x7F7F7F7F7F7F7F7FULL) << 9;
@@ -88,7 +125,6 @@ uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position) {
             break;
 
         case KNIGHT:
-            break;
             // Left 2, Up 1
             temp_positions = (position & 0xFCFCFCFCFCFCFCFCULL) << 6;
             attacks |= temp_positions;
@@ -122,17 +158,42 @@ uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position) {
             attacks |= temp_positions;
             break;
 		case BISHOP:
-            // Calculate diagonal attacks from the bishop's position
-            // Note: Implement get_diagonal_attacks function that handles obstructions
             attacks |= get_diagonal_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
             break;
 
         case ROOK:
-            break;
-            // Calculate horizontal and vertical attacks from the rook's position
-            // Note: Implement get_horizontal_vertical_attacks function that handles obstructions
             attacks |= get_horizontal_vertical_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
             break;
+        case QUEEN:
+            attacks |= get_diagonal_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
+            attacks |= get_horizontal_vertical_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
+            break;
+        case KING:
+            // North
+            attacks |= (position & 0xFFFFFFFFFFFFFF00ULL) >> 8;
+            
+            // North-East
+            attacks |= (position & 0x7F7F7F7F7F7F7F00ULL) >> 7;
+            
+            // East
+            attacks |= (position & 0x7F7F7F7F7F7F7F7FULL) << 1;
+            
+            // South-East
+            attacks |= (position & 0x007F7F7F7F7F7F7FULL) << 9;
+            
+            // South
+            attacks |= (position & 0x00FFFFFFFFFFFFFFULL) << 8;
+            
+            // South-West
+            attacks |= (position & 0x00FEFEFEFEFEFEFEULL) << 7;
+            
+            // West
+            attacks |= (position & 0xFEFEFEFEFEFEFEFEULL) >> 1;
+            
+            // North-West
+            attacks |= (position & 0xFEFEFEFEFEFEFE00ULL) >> 9;
+            break;
+
     }
 
     return attacks;

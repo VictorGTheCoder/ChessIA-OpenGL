@@ -14,7 +14,6 @@ void update_attack_bitboards(t_bb *bit_boards);
 
 void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end_square)
 {
-    update_attack_bitboards(bitboards);
     Bitboard *bb;
     switch (piece_type)
     {
@@ -130,6 +129,10 @@ void update_attack_bitboards(t_bb *bitboards) {
     bitboards->black_attacks |= generate_piece_attacks(BLACK, ROOK, bitboards->black_rooks);
     bitboards->black_attacks |= generate_piece_attacks(BLACK, QUEEN, bitboards->black_queens);
     bitboards->black_attacks |= generate_piece_attacks(BLACK, KING, bitboards->black_king);
+    printf("Black\n");
+    print_bitboard(bitboards->black_attacks);
+    printf("White\n");
+    print_bitboard(bitboards->white_attacks);
 }
 
 void initialize_bitboards() {
