@@ -105,8 +105,6 @@ void print_combined_bitboard(t_bb *bitboards) {
     printf("\n");
 }
 
-
-
 void update_attack_bitboards(t_bb *bitboards) {
     // Clear previous attack bitboards
     bitboards->white_attacks = 0;
@@ -128,41 +126,58 @@ void update_attack_bitboards(t_bb *bitboards) {
     bitboards->black_attacks |= generate_piece_attacks(BLACK, BISHOP, bitboards->black_bishops);
     bitboards->black_attacks |= generate_piece_attacks(BLACK, ROOK, bitboards->black_rooks);
     bitboards->black_attacks |= generate_piece_attacks(BLACK, QUEEN, bitboards->black_queens);
-    bitboards->black_attacks |= generate_piece_attacks(BLACK, KING, bitboards->black_king);
-    printf("Black\n");
+     bitboards->black_attacks |= generate_piece_attacks(BLACK, KING, bitboards->black_king);
+    // printf("Black\n");
+    // print_bitboard(bitboards->black_attacks);
+    // printf("b king\n");
+    // print_bitboard(bitboards->black_king);
+    // printf("White\n");
+    // print_bitboard(bitboards->white_attacks);
+    // printf("w king\n");
+
+    // print_bitboard(bitboards->white_king);
+
+    
+
+
+
+    printf("black\n");
     print_bitboard(bitboards->black_attacks);
-    printf("White\n");
+    printf("white\n");
     print_bitboard(bitboards->white_attacks);
+
+
 }
 
 void initialize_bitboards() {
     game->bitboards = malloc(sizeof(t_bb));
     // Pawns
-    game->bitboards->black_pawns = 0x000000000000FF00;
-    game->bitboards->white_pawns = 0x00FF000000000000;
+    game->bitboards->black_pawns = 0x000000000000FF00ULL;
+    game->bitboards->white_pawns = 0x00FF000000000000ULL;
 
     // Knights
-    game->bitboards->black_knights = 0x0000000000000042;
-    game->bitboards->white_knights = 0x4200000000000000;
+    game->bitboards->black_knights = 0x0000000000000042ULL;
+    game->bitboards->white_knights = 0x4200000000000000ULL;
 
     // Bishops
-    game->bitboards->black_bishops = 0x0000000000000024;
-    game->bitboards->white_bishops = 0x2400000000000000;
+    game->bitboards->black_bishops = 0x0000000000000024ULL;
+    game->bitboards->white_bishops = 0x2400000000000000ULL;
 
     // Rooks
-    game->bitboards->black_rooks = 0x0000000000000081;
-    game->bitboards->white_rooks = 0x8100000000000000;
+    game->bitboards->black_rooks = 0x0000000000000081ULL;
+    game->bitboards->white_rooks = 0x8100000000000000ULL;
 
     // Queens
-    game->bitboards->black_queens = 0x0000000000000010;
-    game->bitboards->white_queens = 0x1000000000000000;
+    game->bitboards->black_queens = 0x0000000000000008ULL;
+    game->bitboards->white_queens = 0x0800000000000000ULL;
 
     // Kings
-    game->bitboards->black_king = 0x0000000000000008;
-    game->bitboards->white_king = 0x0800000000000000;
+    game->bitboards->black_king = 0x0000000000000010ULL;
+    game->bitboards->white_king = 0x1000000000000000ULL;
 
-    game->bitboards->black_attacks = 0x0000000000000000;
-    game->bitboards->white_attacks = 0x0000000000000000;
+    // Attack bitboards
+    game->bitboards->black_attacks = 0x0000000000000000ULL;
+    game->bitboards->white_attacks = 0x0000000000000000ULL;
 
 
     // All white pieces

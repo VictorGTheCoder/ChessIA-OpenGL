@@ -99,11 +99,11 @@ int is_legal_bishop_move(t_game *game, int start_square, int end_square) {
     }
     
     // Check if the destination square is empty or has an opponent's piece
-    uint64_t mask = 1ULL << end_square;
-    if ((game->bitboards->white_pieces & mask && game->white_to_play) ||
-        (game->bitboards->black_pieces & mask && !game->white_to_play)) {
-        return 0;
-    }
+    // uint64_t mask = 1ULL << end_square;
+    // if ((game->bitboards->white_pieces & mask && game->white_to_play) ||
+    //     (game->bitboards->black_pieces & mask && !game->white_to_play)) {
+    //     return 0;
+    // }
     
     return 1;
 }
@@ -118,11 +118,11 @@ int is_legal_knight_move(t_game *game, int start_square, int end_square) {
     }
     
     // Check if the destination square is empty or has an opponent's piece
-    uint64_t mask = 1ULL << end_square;
-    if ((game->bitboards->white_pieces & mask && game->white_to_play) ||
-        (game->bitboards->black_pieces & mask && !game->white_to_play)) {
-        return 0;
-    }
+    // uint64_t mask = 1ULL << end_square;
+    // if ((game->bitboards->white_pieces & mask && game->white_to_play) ||
+    //     (game->bitboards->black_pieces & mask && !game->white_to_play)) {
+    //     return 0;
+    // }
     
     return 1;
 }
@@ -141,11 +141,11 @@ int is_legal_king_move(t_game *game, int start_square, int end_square) {
     }
     
     // Check if the destination square is empty or has an opponent's piece
-    uint64_t mask = 1ULL << end_square;
-    if ((game->bitboards->white_pieces & mask && game->white_to_play) ||
-        (game->bitboards->black_pieces & mask && !game->white_to_play)) {
-        return 0;
-    }
+    // uint64_t mask = 1ULL << end_square;
+    // if ((game->bitboards->white_pieces & mask && game->white_to_play) ||
+    //     (game->bitboards->black_pieces & mask && !game->white_to_play)) {
+    //     return 0;
+    // }
     
     return 1; // Legal move
 }
@@ -157,10 +157,10 @@ int is_king_in_check(t_game *game, int color) {
     king_position = (color == WHITE) ? game->bitboards->white_king : game->bitboards->black_king;
     
     // Check if the king is attacked
-    if ((color == WHITE && (game->bitboards->black_attacks & king_position)) || 
-        (color == BLACK && (game->bitboards->white_attacks & king_position))) {
-        return 1; // King is in check
-    }
+    // if ((color == WHITE && (game->bitboards->black_attacks & king_position)) || 
+    //     (color == BLACK && (game->bitboards->white_attacks & king_position))) {
+    //     return 1; // King is in check
+    // }
     
     return 0; // King is not in check
 }
