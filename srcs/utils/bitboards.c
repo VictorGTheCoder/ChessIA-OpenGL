@@ -55,7 +55,7 @@ Bitboard *getBoard(int piece_type)
             break;
         default:
             printf("ERROR THERE IS NO MATCHING TYPE\n");
-            exit(EXIT_FAILURE);
+            //exit(EXIT_FAILURE);
     }
 }
 
@@ -134,24 +134,24 @@ void update_attack_bitboards(t_bb *bitboards) {
     bitboards->black_attacks |= generate_piece_attacks(BLACK, ROOK, bitboards->black_rooks);
     bitboards->black_attacks |= generate_piece_attacks(BLACK, QUEEN, bitboards->black_queens);
     bitboards->black_attacks |= generate_piece_attacks(BLACK, KING, bitboards->black_king);
-    // printf("Black\n");
-    // print_bitboard(bitboards->black_attacks);
+    printf("Black\n");
+    print_bitboard(bitboards->black_attacks);
+    printf("White\n");
+    print_bitboard(bitboards->white_attacks);
+    printf("w king\n");
+
     // printf("b king\n");
     // print_bitboard(bitboards->black_king);
-    // printf("White\n");
-    // print_bitboard(bitboards->white_attacks);
-    // printf("w king\n");
-
     // print_bitboard(bitboards->white_king);
 
     
 
 
 
-    printf("black\n");
-    print_bitboard(bitboards->black_attacks);
-    printf("white\n");
-    print_bitboard(bitboards->white_attacks);
+    // printf("black\n");
+    // print_bitboard(bitboards->black_pieces);
+    // printf("white\n");
+    // print_bitboard(bitboards->white_pieces);
 
 
 }
@@ -160,7 +160,7 @@ void initialize_bitboards() {
     game->bitboards = malloc(sizeof(t_bb));
     // Pawns
     game->bitboards->black_pawns = 0x000000000000FF00ULL;
-    game->bitboards->white_pawns = 0x00FF000000000000ULL;
+    game->bitboards->white_pawns = 0x0000000000000000ULL;
 
     // Knights
     game->bitboards->black_knights = 0x0000000000000042ULL;

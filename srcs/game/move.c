@@ -45,6 +45,35 @@ void switch_ply()
         game->white_to_play = 1;
 }
 
+static void check_if_a_piece_was_eaten(t_case *start_case, t_case *end_case)
+{
+    if (end_case->status == EMPTY)
+        return ;
+    int is_white = is_white_piece(end_case) == 1;
+    if (is_white == 1)
+    {
+        if (!game->white_to_play)
+        {
+            set_bit(getBoard(end_case->status) ,get_square_from_xy(end_case->startX, end_case->startY), 0); 
+            printf("White piece %d is dead at square %d\n", end_case->status, get_square_from_xy(end_case->startX, end_case->startY));
+
+        }
+    }
+    else if (is_white == 0)
+    {
+        if (game->white_to_play)
+        {
+
+            set_bit(getBoard(end_case->status) ,get_square_from_xy(end_case->startX, end_case->startY), 0); 
+            printf("Black piece %d is dead at square %d\n", end_case->status, get_square_from_xy(end_case->startX, end_case->startY));
+        }
+    }
+    else if (is_white == -1)
+    {
+        printf("Error: Piece is not white or black\n");
+    }
+}
+
 int try_to_move(int start_square, int end_square) {
     t_current_ply c_ply;
 
@@ -53,32 +82,18 @@ int try_to_move(int start_square, int end_square) {
     t_case *start_case = &(gui->case_list[start_square]);
     t_case *end_case = &(gui->case_list[end_square]);
 
-    set_bit(&c_ply.move_start, start_square, 1);
-    printf("Start Move\n");
-    print_bitboard(c_ply.move_start);
-    printf("END Move\n");
+    // set_bit(&c_ply.move_start, start_square, 1);
+    // printf("Start Move\n");
+    // print_bitboard(c_ply.move_start);
+    // printf("END Move\n");
 
     set_bit(&c_ply.move_end, end_square, 1);
     print_bitboard(c_ply.move_end);
-    // Check if move is legal accorldy to the type of piece
     c_ply.piece_type = start_case->status;
+    // Check if move is legal accorldy to the type of piece
     if (is_move_legal(start_square, end_square, c_ply))
     {
-        
-        if (end_case->status & 0b11000 == WHITE)
-        {
-            if (!game->white_to_play)
-            {
-                set_bit(getBoard(end_case->status) ,get_square_from_xy(end_case->startX, end_case->startY), 0); 
-            }
-        }
-        else if (end_case->status & 0b11000 == BLACK)
-        {
-            if (game->white_to_play)
-            {
-                set_bit(getBoard(end_case->status) ,get_square_from_xy(end_case->startX, end_case->startY), 0); 
-            }
-        }
+        check_if_a_piece_was_eaten(start_case, end_case);
         update_bitboards(game->bitboards, start_case->status, start_square, end_square);
         //print_bitboard(game->bitboards->white_knights);
         //print_combined_bitboard(game->bitboards);
@@ -91,52 +106,6 @@ int try_to_move(int start_square, int end_square) {
     }
     printf("Illegal move\n");
 
-    //print_combined_bitboard(game->bitboards);
-    /*if (start_case->status != EMPTY)
-    {
-        //move_piece(gui, start_case, end_case);
-        if (game->white_to_play == 1)
-            game->white_to_play = 0;
-        else
-            game->white_to_play = 1;
-        return (1);
-    }*/
-
-    
-    //return (0);
-    // Function assumes that the bitboard representation and game state are well synchronized
-    // Ensure you have functions to update game state based on bitboard changes and vice versa
-
-    // Call your move validation function here (Assuming it’s updated to use bitboards)
-    /*int move_valid = move_is_valid(game, start_square, end_square);
-
-    if (move_valid) {
-        // Update en passant target
-        game->en_passant_target = update_en_passant(game, start_square, end_square);
-
-        // Update castling rights
-        update_castling_rights(game, start_square, end_square);
-
-        // Perform the move on the bitboards
-        perform_move_on_bitboards(game->bitboards, start_square, end_square);
-
-        // Toggle the side to move
-        game->white_to_play = !game->white_to_play;
-
-        // If it’s the AI’s turn, call the AI function
-        if (!game->white_to_play) {
-            process_AI(game);
-            game->white_to_play = !game->white_to_play;
-        }
-
-        // Reset piece selection flag
-        game->is_piece_selected = 0;
-
-        // Return 1 indicating that the move was performed
-        return 1;
-    }*/
-
-    // Return the result of the move validation (0 or error code)
     return 0;
 }
 

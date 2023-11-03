@@ -57,6 +57,42 @@ GLuint get_pieces_image(t_gui *gui, t_case *square)
     }
 }
 
+int get_status_by_index(int index)
+{
+    int square_status = 0;
+    if (get_bit(game->bitboards->black_pieces | game->bitboards->white_pieces, index) == 0)
+        square_status = EMPTY;
+    else
+    {
+        if (get_bit(game->bitboards->black_pawns, index) == 1)
+            square_status = PAWN | BLACK;
+        else if (get_bit(game->bitboards->black_knights, index) == 1)
+            square_status = KNIGHT | BLACK;
+        else if (get_bit(game->bitboards->black_bishops, index) == 1)
+            square_status = BISHOP | BLACK;
+        else if (get_bit(game->bitboards->black_rooks, index) == 1)
+            square_status = ROOK | BLACK;
+        else if (get_bit(game->bitboards->black_queens, index) == 1)
+            square_status = QUEEN | BLACK;
+        else if (get_bit(game->bitboards->black_king, index) == 1)
+            square_status = KING | BLACK;
+        else if (get_bit(game->bitboards->white_pawns, index) == 1)
+            square_status = PAWN | WHITE;
+        else if (get_bit(game->bitboards->white_knights, index) == 1)
+            square_status = KNIGHT | WHITE;
+        else if (get_bit(game->bitboards->white_bishops, index) == 1)
+            square_status = BISHOP | WHITE;
+        else if (get_bit(game->bitboards->white_rooks, index) == 1)
+            square_status = ROOK | WHITE;
+        else if (get_bit(game->bitboards->white_queens, index) == 1)
+            square_status = QUEEN | WHITE;
+        else if (get_bit(game->bitboards->white_king, index) == 1)
+            square_status = KING | WHITE;
+    }
+
+    return square_status;
+}
+
 int is_white_piece(t_case *square)
 {
 	if (square->status == 0)
@@ -99,7 +135,7 @@ void case_selected(t_gui *gui, t_case *square)
         game->is_piece_selected = 1;
         gui->square_selected = square;
     }
-    else if (game->is_piece_selected)
+    else if (game->is_piece_selected == 1)
     {
         // Effectuez le mouvement si une pièce est sélectionnée et si la case cliquée est vide ou a une pièce de couleur opposée
         gui->square_selected->square_img = 0; // Enlevez la pièce de la case d'origine

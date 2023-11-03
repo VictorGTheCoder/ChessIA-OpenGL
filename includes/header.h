@@ -200,6 +200,7 @@ void print_bitboard(Bitboard board);
 void print_combined_bitboard(t_bb *bitboards);
 t_game *clone_t_game(t_game *game);
 void free_t_game(t_game *game);
+int get_status_by_index(int index);
 
 
 int is_move_legal(int start_square, int end_case, t_current_ply ply);
