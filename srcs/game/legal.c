@@ -150,38 +150,59 @@ int is_legal_king_move(t_game *game, int start_square, int end_square) {
     return 1; // Legal move
 }
 
-int is_king_in_check(t_game *game, int color) {
+int is_king_in_check(t_game *game, int is_white_to_play) {
     uint64_t king_position;
     
+    if (is_white_to_play == 1)
+    {
+        printf("White is playing\n");
+    }
+    else
+        printf("Black is playing\n");
     // Determine the position of the king
-    king_position = (color == WHITE) ? game->bitboards->white_king : game->bitboards->black_king;
+    king_position = (is_white_to_play == 1) ? game->bitboards->white_king : game->bitboards->black_king;
     
     // Check if the king is attacked
-    // if ((color == WHITE && (game->bitboards->black_attacks & king_position)) || 
-    //     (color == BLACK && (game->bitboards->white_attacks & king_position))) {
-    //     return 1; // King is in check
-    // }
+    if ((is_white_to_play == 1 && (game->bitboards->black_attacks & king_position)) || 
+        (is_white_to_play == 0 && (game->bitboards->white_attacks & king_position))) {
+        return 1; // King is in check
+    }
     
     return 0; // King is not in check
 }
 
-int is_king_in_check_after_move(t_bb *bb, int piece_type, int start_square, int end_square) {
+int is_king_in_check_after_move(t_bb bb, int piece_type, int start_square, int end_square, t_current_ply ply) {
     // Simulate the move
     printf("Start_square %d\n", start_square);
     printf("End_square %d\n", end_square);
-    update_bitboards(bb, piece_type, start_square, end_square);
-    //printf("TESTTEST\n\n\n");
+    update_bitboards(&bb, piece_type, start_square, end_square);
+
+
+    if (check_if_a_piece_is_eaten(ply) == 1)
+    {
+        printf("<--------PIECE EATEN ------->\n");
+        delete_piece_from_bitboard(end_square, getBoard(piece_type));
+        //update_bitboards(&bb, piece_type, start_square, end_square);
+
+    }
+
+    //print_bitboard(bb->white_attacks);
+
     int in_check = is_king_in_check(game, game->white_to_play);
-    update_bitboards(bb, piece_type, end_square, start_square);
-    return 0;
+    update_bitboards(&bb, piece_type, end_square, start_square);
+    return in_check;
 }
 
 int is_move_legal(int start_square, int end_case, t_current_ply ply)
 {
 	int result = 0;
-    //if (is_king_in_check_after_move((game->bitboards), gui->case_list[start_square].status, start_square, end_case))
-     //   return (0); // Move puts king in check
+    if (is_king_in_check_after_move(*(game->bitboards), gui->case_list[start_square].status, start_square, end_case, ply))
+    {
+        printf("[ILLEGAL MOVE] King is check\n");
+       return (0); // Move puts king in check
+    } 
     
+
     switch (ply.piece_type & COLOR_MASK)
 	{
         case PAWN:

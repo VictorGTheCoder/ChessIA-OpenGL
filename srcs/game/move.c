@@ -43,36 +43,54 @@ void switch_ply()
         game->white_to_play = 0;
     else
         game->white_to_play = 1;
+
+    printf("\n\nswitch ply\n\n");
 }
 
-static void check_if_a_piece_was_eaten(t_case *start_case, t_case *end_case)
+int check_if_a_piece_is_eaten(t_current_ply c_ply)
 {
-    if (end_case->status == EMPTY)
-        return ;
-    int is_white = is_white_piece(end_case) == 1;
-    if (is_white == 1)
+    if (c_ply.piece_type == EMPTY)
+        return (0);
+    if (game->white_to_play)
     {
-        if (!game->white_to_play)
-        {
-            set_bit(getBoard(end_case->status) ,get_square_from_xy(end_case->startX, end_case->startY), 0); 
-            printf("White piece %d is dead at square %d\n", end_case->status, get_square_from_xy(end_case->startX, end_case->startY));
+        int index = __builtin_ctzll(c_ply.move_end);
+        if (c_ply.move_end && game->bitboards->black_pawns == 1)
+            return (1);
+    }
+    else
+    {
+        int index = __builtin_ctzll(c_ply.move_end);
+        if (c_ply.move_end && game->bitboards->white_pawns == 1)
+            return (1);
+    }
 
-        }
-    }
-    else if (is_white == 0)
-    {
-        if (game->white_to_play)
-        {
+    // if (end_case->status == EMPTY)
+    //     return ;
+    // int is_white = is_white_piece(end_case) == 1;
+    // if (is_white == 1)
+    // {
+    //     if (!game->white_to_play)
+    //     {
+    //         set_bit(getBoard(end_case->status) ,get_square_from_xy(end_case->startX, end_case->startY), 0); 
+    //         printf("White piece %d is dead at square %d\n", end_case->status, get_square_from_xy(end_case->startX, end_case->startY));
 
-            set_bit(getBoard(end_case->status) ,get_square_from_xy(end_case->startX, end_case->startY), 0); 
-            printf("Black piece %d is dead at square %d\n", end_case->status, get_square_from_xy(end_case->startX, end_case->startY));
-        }
-    }
-    else if (is_white == -1)
-    {
-        printf("Error: Piece is not white or black\n");
-    }
+    //     }
+    // }
+    // else if (is_white == 0)
+    // {
+    //     if (game->white_to_play)
+    //     {
+
+            
+    //         printf("Black piece %d is dead at square %d\n", end_case->status, get_square_from_xy(end_case->startX, end_case->startY));
+    //     }
+    // }
+    // else if (is_white == -1)
+    // {
+    //     printf("Error: Piece is not white or black\n");
+    // }
 }
+
 
 int try_to_move(int start_square, int end_square) {
     t_current_ply c_ply;
@@ -93,8 +111,16 @@ int try_to_move(int start_square, int end_square) {
     // Check if move is legal accorldy to the type of piece
     if (is_move_legal(start_square, end_square, c_ply))
     {
-        check_if_a_piece_was_eaten(start_case, end_case);
+        if (check_if_a_piece_is_eaten(c_ply))
+        {
+            printf("<--------PIECE EATEN ------->\n");
+            delete_piece_from_bitboard(end_square, getBoard(c_ply.piece_type));
+        }
         update_bitboards(game->bitboards, start_case->status, start_square, end_square);
+        printf("<======BLACK======>\n");
+        print_bitboard(game->bitboards->black_pieces);
+        printf("<======WHITE======>\n");
+        print_bitboard(game->bitboards->white_pieces);
         //print_bitboard(game->bitboards->white_knights);
         //print_combined_bitboard(game->bitboards);
 

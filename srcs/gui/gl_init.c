@@ -54,7 +54,7 @@ GLuint	load_texture(const char* file)
 
 	SOIL_free_image_data(image);
 
-	printf("Loaded texture %s with ID %u\n", file, textureID);
+	//printf("Loaded texture %s with ID %u\n", file, textureID);
 	return textureID;
 }
 

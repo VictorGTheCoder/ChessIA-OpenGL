@@ -134,11 +134,11 @@ void update_attack_bitboards(t_bb *bitboards) {
     bitboards->black_attacks |= generate_piece_attacks(BLACK, ROOK, bitboards->black_rooks);
     bitboards->black_attacks |= generate_piece_attacks(BLACK, QUEEN, bitboards->black_queens);
     bitboards->black_attacks |= generate_piece_attacks(BLACK, KING, bitboards->black_king);
-    printf("Black\n");
-    print_bitboard(bitboards->black_attacks);
-    printf("White\n");
-    print_bitboard(bitboards->white_attacks);
-    printf("w king\n");
+    // printf("Black\n");
+    // print_bitboard(bitboards->black_attacks);
+    // printf("White\n");
+    // print_bitboard(bitboards->white_attacks);
+    // printf("w king\n");
 
     // printf("b king\n");
     // print_bitboard(bitboards->black_king);
@@ -208,6 +208,12 @@ void initialize_bitboards() {
 int get_bit(Bitboard board, int index) {
     return (board >> index) & 1;
 }
+
+void delete_piece_from_bitboard(int index, Bitboard *bb)
+{
+    set_bit(bb , index, 0); 
+}
+
 
 void set_bit(Bitboard *board, int index, int value) {
     if (value)
