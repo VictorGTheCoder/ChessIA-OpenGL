@@ -102,7 +102,17 @@ typedef struct s_bb
 
 	Bitboard black_attacks;
 	Bitboard white_attacks;
+
+
 }	t_bb;
+
+typedef struct s_current_ply
+{
+	Bitboard move_start;
+	Bitboard move_end;
+
+	int piece_type;
+} t_current_ply;
 
 typedef struct s_game
 {
@@ -192,10 +202,13 @@ t_game *clone_t_game(t_game *game);
 void free_t_game(t_game *game);
 
 
-int is_move_legal(int start_square, int end_case);
+int is_move_legal(int start_square, int end_case, t_current_ply ply);
+Bitboard *getBoard(int piece_type);
 void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end_square);
 
 uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position);
+
+
 
 extern t_game *game;
 extern t_gui *gui;

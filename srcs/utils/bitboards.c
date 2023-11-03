@@ -12,51 +12,57 @@ void update_attack_bitboards(t_bb *bit_boards);
 56 57 58 59 60 61 62 63
 */
 
-void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end_square)
+Bitboard *getBoard(int piece_type)
 {
     Bitboard *bb;
     switch (piece_type)
     {
         case PAWN | WHITE:
-            bb = &bitboards->white_pawns;
+            bb = &game->bitboards->white_pawns;
             break;
         case PAWN | BLACK:
-            bb = &bitboards->black_pawns;
+            bb = &game->bitboards->black_pawns;
             break;
         case ROOK | WHITE:
-            bb = &bitboards->white_rooks;
+            bb = &game->bitboards->white_rooks;
             break;
         case ROOK | BLACK:
-            bb = &bitboards->black_rooks;
+            bb = &game->bitboards->black_rooks;
             break;
         case BISHOP | WHITE:
-            bb = &bitboards->white_bishops;
+            bb = &game->bitboards->white_bishops;
             break;
         case BISHOP | BLACK:
-            bb = &bitboards->black_bishops;
+            bb = &game->bitboards->black_bishops;
             break;
         case KING | WHITE:
-            bb = &bitboards->white_king;
+            bb = &game->bitboards->white_king;
             break;
         case KING | BLACK:
-            bb = &bitboards->black_king;
+            bb = &game->bitboards->black_king;
             break;
         case QUEEN | WHITE:
-            bb = &bitboards->white_queens;
+            bb = &game->bitboards->white_queens;
             break;
         case QUEEN | BLACK:
-            bb = &bitboards->black_queens;
+            bb = &game->bitboards->black_queens;
             break;
         case KNIGHT | WHITE:
-            bb = &bitboards->white_knights;
+            bb = &game->bitboards->white_knights;
             break;
         case KNIGHT | BLACK:
-            bb = &bitboards->black_knights;
+            bb = &game->bitboards->black_knights;
             break;
         default:
             printf("ERROR THERE IS NO MATCHING TYPE\n");
             exit(EXIT_FAILURE);
     }
+}
+
+void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end_square)
+{
+    Bitboard *bb = getBoard(piece_type);
+
 
     uint64_t start_mask = 1ULL << (start_square);
     uint64_t end_mask = 1ULL << (end_square);
@@ -71,6 +77,7 @@ void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end
     bitboards->black_pieces =  bitboards->black_pawns |  bitboards->black_knights | 
                                 bitboards->black_bishops |  bitboards->black_rooks | 
                                 bitboards->black_queens |  bitboards->black_king;
+
     update_attack_bitboards(bitboards);
 }
 
@@ -126,7 +133,7 @@ void update_attack_bitboards(t_bb *bitboards) {
     bitboards->black_attacks |= generate_piece_attacks(BLACK, BISHOP, bitboards->black_bishops);
     bitboards->black_attacks |= generate_piece_attacks(BLACK, ROOK, bitboards->black_rooks);
     bitboards->black_attacks |= generate_piece_attacks(BLACK, QUEEN, bitboards->black_queens);
-     bitboards->black_attacks |= generate_piece_attacks(BLACK, KING, bitboards->black_king);
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, KING, bitboards->black_king);
     // printf("Black\n");
     // print_bitboard(bitboards->black_attacks);
     // printf("b king\n");
@@ -178,7 +185,6 @@ void initialize_bitboards() {
     // Attack bitboards
     game->bitboards->black_attacks = 0x0000000000000000ULL;
     game->bitboards->white_attacks = 0x0000000000000000ULL;
-
 
     // All white pieces
     game->bitboards->white_pieces = game->bitboards->white_pawns | 

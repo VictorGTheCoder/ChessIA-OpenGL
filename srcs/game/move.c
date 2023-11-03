@@ -46,15 +46,40 @@ void switch_ply()
 }
 
 int try_to_move(int start_square, int end_square) {
+    t_current_ply c_ply;
+
+    c_ply.move_start = 0;
+    c_ply.move_end = 0;
     t_case *start_case = &(gui->case_list[start_square]);
     t_case *end_case = &(gui->case_list[end_square]);
 
+    set_bit(&c_ply.move_start, start_square, 1);
+    printf("Start Move\n");
+    print_bitboard(c_ply.move_start);
+    printf("END Move\n");
+
+    set_bit(&c_ply.move_end, end_square, 1);
+    print_bitboard(c_ply.move_end);
     // Check if move is legal accorldy to the type of piece
-    if (is_move_legal(start_square, end_square))
+    c_ply.piece_type = start_case->status;
+    if (is_move_legal(start_square, end_square, c_ply))
     {
         
+        if (end_case->status & 0b11000 == WHITE)
+        {
+            if (!game->white_to_play)
+            {
+                set_bit(getBoard(end_case->status) ,get_square_from_xy(end_case->startX, end_case->startY), 0); 
+            }
+        }
+        else if (end_case->status & 0b11000 == BLACK)
+        {
+            if (game->white_to_play)
+            {
+                set_bit(getBoard(end_case->status) ,get_square_from_xy(end_case->startX, end_case->startY), 0); 
+            }
+        }
         update_bitboards(game->bitboards, start_case->status, start_square, end_square);
-
         //print_bitboard(game->bitboards->white_knights);
         //print_combined_bitboard(game->bitboards);
 

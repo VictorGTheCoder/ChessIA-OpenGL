@@ -176,13 +176,13 @@ int is_king_in_check_after_move(t_bb *bb, int piece_type, int start_square, int 
     return 0;
 }
 
-int is_move_legal(int start_square, int end_case)
+int is_move_legal(int start_square, int end_case, t_current_ply ply)
 {
 	int result = 0;
     //if (is_king_in_check_after_move((game->bitboards), gui->case_list[start_square].status, start_square, end_case))
      //   return (0); // Move puts king in check
     
-    switch (gui->case_list[start_square].status & COLOR_MASK)
+    switch (ply.piece_type & COLOR_MASK)
 	{
         case PAWN:
 			result = is_legal_pawn_move(game, start_square, end_case);
