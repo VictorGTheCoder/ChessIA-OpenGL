@@ -150,7 +150,7 @@ int is_legal_king_move(t_game *game, int start_square, int end_square) {
     return 1; // Legal move
 }
 
-int is_king_in_check(t_game *game, int is_white_to_play) {
+int is_king_in_check(t_bb bb, int is_white_to_play) {
     uint64_t king_position;
     
     if (is_white_to_play == 1)
@@ -163,8 +163,8 @@ int is_king_in_check(t_game *game, int is_white_to_play) {
     king_position = (is_white_to_play == 1) ? game->bitboards->white_king : game->bitboards->black_king;
     
     // Check if the king is attacked
-    if ((is_white_to_play == 1 && (game->bitboards->black_attacks & king_position)) || 
-        (is_white_to_play == 0 && (game->bitboards->white_attacks & king_position))) {
+    if ((is_white_to_play == 1 && (bb.black_attacks & king_position)) || 
+        (is_white_to_play == 0 && (bb.white_attacks & king_position))) {
         return 1; // King is in check
     }
     
@@ -173,23 +173,26 @@ int is_king_in_check(t_game *game, int is_white_to_play) {
 
 int is_king_in_check_after_move(t_bb bb, int piece_type, int start_square, int end_square, t_current_ply ply) {
     // Simulate the move
-    printf("Start_square %d\n", start_square);
-    printf("End_square %d\n", end_square);
-    update_bitboards(&bb, piece_type, start_square, end_square);
-
-
+    // printf("Start_square %d\n", start_square);
+    // printf("End_square %d\n", end_square);
+    make_move_bitboards(&bb, piece_type, start_square, end_square);
+    update_bitboards(&bb);
     if (check_if_a_piece_is_eaten(ply) == 1)
     {
         printf("<--------PIECE EATEN ------->\n");
-        delete_piece_from_bitboard(end_square, getBoard(piece_type));
+        delete_piece_from_bitboard(end_square, getBoard(&bb, piece_type));
         //update_bitboards(&bb, piece_type, start_square, end_square);
 
     }
 
     //print_bitboard(bb->white_attacks);
 
-    int in_check = is_king_in_check(game, game->white_to_play);
-    update_bitboards(&bb, piece_type, end_square, start_square);
+    update_bitboards(&bb);
+    printf("King Check Checker\n");
+    print_bitboard(bb.white_attacks);
+    printf("Black\n");
+    print_bitboard(bb.black_attacks);
+    int in_check = is_king_in_check(bb, game->white_to_play);
     return in_check;
 }
 

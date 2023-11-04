@@ -112,6 +112,7 @@ typedef struct s_current_ply
 	Bitboard move_end;
 
 	int piece_type;
+	int target_status;
 } t_current_ply;
 
 typedef struct s_game
@@ -204,8 +205,9 @@ int get_status_by_index(int index);
 
 
 int is_move_legal(int start_square, int end_case, t_current_ply ply);
-Bitboard *getBoard(int piece_type);
-void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end_square);
+Bitboard *getBoard(t_bb *bitaboards, int piece_type);
+void update_bitboards(t_bb *bitboards);
+void make_move_bitboards(t_bb *bitboards,  int piece_type, int start_square, int end_square);
 
 uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position);
 int check_if_a_piece_is_eaten(t_current_ply ply);

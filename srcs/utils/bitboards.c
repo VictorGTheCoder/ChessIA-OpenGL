@@ -12,46 +12,46 @@ void update_attack_bitboards(t_bb *bit_boards);
 56 57 58 59 60 61 62 63
 */
 
-Bitboard *getBoard(int piece_type)
+Bitboard *getBoard(t_bb *bitboards, int piece_type)
 {
     Bitboard *bb;
     switch (piece_type)
     {
         case PAWN | WHITE:
-            bb = &game->bitboards->white_pawns;
+            bb = &bitboards->white_pawns;
             break;
         case PAWN | BLACK:
-            bb = &game->bitboards->black_pawns;
+            bb = &bitboards->black_pawns;
             break;
         case ROOK | WHITE:
-            bb = &game->bitboards->white_rooks;
+            bb = &bitboards->white_rooks;
             break;
         case ROOK | BLACK:
-            bb = &game->bitboards->black_rooks;
+            bb = &bitboards->black_rooks;
             break;
         case BISHOP | WHITE:
-            bb = &game->bitboards->white_bishops;
+            bb = &bitboards->white_bishops;
             break;
         case BISHOP | BLACK:
-            bb = &game->bitboards->black_bishops;
+            bb = &bitboards->black_bishops;
             break;
         case KING | WHITE:
-            bb = &game->bitboards->white_king;
+            bb = &bitboards->white_king;
             break;
         case KING | BLACK:
-            bb = &game->bitboards->black_king;
+            bb = &bitboards->black_king;
             break;
         case QUEEN | WHITE:
-            bb = &game->bitboards->white_queens;
+            bb = &bitboards->white_queens;
             break;
         case QUEEN | BLACK:
-            bb = &game->bitboards->black_queens;
+            bb = &bitboards->black_queens;
             break;
         case KNIGHT | WHITE:
-            bb = &game->bitboards->white_knights;
+            bb = &bitboards->white_knights;
             break;
         case KNIGHT | BLACK:
-            bb = &game->bitboards->black_knights;
+            bb = &bitboards->black_knights;
             break;
         default:
             printf("ERROR THERE IS NO MATCHING TYPE\n");
@@ -59,9 +59,9 @@ Bitboard *getBoard(int piece_type)
     }
 }
 
-void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end_square)
+void make_move_bitboards(t_bb *bitboards,  int piece_type, int start_square, int end_square)
 {
-    Bitboard *bb = getBoard(piece_type);
+    Bitboard *bb = getBoard(bitboards, piece_type);
 
 
     uint64_t start_mask = 1ULL << (start_square);
@@ -69,6 +69,11 @@ void update_bitboards(t_bb *bitboards, int piece_type, int start_square, int end
 
     *bb &= ~start_mask; // Clear the bit at the start square
     *bb |= end_mask;    // Set the bit at the end square
+}
+
+void update_bitboards(t_bb *bitboards)
+{
+
 
     bitboards->white_pieces =  bitboards->white_pawns |  bitboards->white_knights | 
                                 bitboards->white_bishops |  bitboards->white_rooks | 

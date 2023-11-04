@@ -49,18 +49,16 @@ void switch_ply()
 
 int check_if_a_piece_is_eaten(t_current_ply c_ply)
 {
-    if (c_ply.piece_type == EMPTY)
+    if (c_ply.target_status == EMPTY)
         return (0);
     if (game->white_to_play)
     {
-        int index = __builtin_ctzll(c_ply.move_end);
-        if (c_ply.move_end && game->bitboards->black_pawns == 1)
+        if (c_ply.move_end & game->bitboards->black_pawns == 1)
             return (1);
     }
     else
     {
-        int index = __builtin_ctzll(c_ply.move_end);
-        if (c_ply.move_end && game->bitboards->white_pawns == 1)
+        if (c_ply.move_end & game->bitboards->white_pawns == 1)
             return (1);
     }
 
@@ -105,18 +103,25 @@ int try_to_move(int start_square, int end_square) {
     // print_bitboard(c_ply.move_start);
     // printf("END Move\n");
 
-    set_bit(&c_ply.move_end, end_square, 1);
-    print_bitboard(c_ply.move_end);
+    // set_bit(&c_ply.move_end, end_square, 1);
+    // print_bitboard(c_ply.move_end);
     c_ply.piece_type = start_case->status;
+    c_ply.target_status = end_case->status;
     // Check if move is legal accorldy to the type of piece
     if (is_move_legal(start_square, end_square, c_ply))
     {
-        if (check_if_a_piece_is_eaten(c_ply))
+        if (c_ply.target_status != EMPTY)
         {
-            printf("<--------PIECE EATEN ------->\n");
-            delete_piece_from_bitboard(end_square, getBoard(c_ply.piece_type));
+            delete_piece_from_bitboard(end_square, getBoard(game->bitboards, c_ply.target_status));
         }
-        update_bitboards(game->bitboards, start_case->status, start_square, end_square);
+        make_move_bitboards(game->bitboards, c_ply.piece_type, start_square, end_square);
+        // if (check_if_a_piece_is_eaten(c_ply))
+        // {
+        //     printf("<--------PIECE EATEN MAIN ------->\n");
+            
+
+        // }
+        update_bitboards(game->bitboards);
         printf("<======BLACK======>\n");
         print_bitboard(game->bitboards->black_pieces);
         printf("<======WHITE======>\n");
@@ -124,7 +129,6 @@ int try_to_move(int start_square, int end_square) {
         //print_bitboard(game->bitboards->white_knights);
         //print_combined_bitboard(game->bitboards);
 
-        
         move_piece(gui, start_case, end_case);
 
         switch_ply();
