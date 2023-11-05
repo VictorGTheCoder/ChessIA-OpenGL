@@ -125,40 +125,20 @@ void update_attack_bitboards(t_bb *bitboards) {
     // Updating the attack bitboards for each piece type and color
     
     // WHITE
-    bitboards->white_attacks |= generate_piece_attacks(WHITE, PAWN,  bitboards->white_pawns);
-    bitboards->white_attacks |= generate_piece_attacks(WHITE, KNIGHT,  bitboards->white_knights);
-    bitboards->white_attacks |= generate_piece_attacks(WHITE, BISHOP, bitboards->white_bishops);
-    bitboards->white_attacks |= generate_piece_attacks(WHITE, ROOK, bitboards->white_rooks);
-    bitboards->white_attacks |= generate_piece_attacks(WHITE, QUEEN, bitboards->white_queens);
-    bitboards->white_attacks |= generate_piece_attacks(WHITE, KING, bitboards->white_king);
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, PAWN,  bitboards->white_pawns, bitboards);
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, KNIGHT,  bitboards->white_knights, bitboards);
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, BISHOP, bitboards->white_bishops, bitboards);
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, ROOK, bitboards->white_rooks, bitboards);
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, QUEEN, bitboards->white_queens, bitboards);
+    bitboards->white_attacks |= generate_piece_attacks(WHITE, KING, bitboards->white_king, bitboards);
     
     // BLACK
-    bitboards->black_attacks |= generate_piece_attacks(BLACK, PAWN, bitboards->black_pawns);
-    bitboards->black_attacks |= generate_piece_attacks(BLACK, KNIGHT, bitboards->black_knights);
-    bitboards->black_attacks |= generate_piece_attacks(BLACK, BISHOP, bitboards->black_bishops);
-    bitboards->black_attacks |= generate_piece_attacks(BLACK, ROOK, bitboards->black_rooks);
-    bitboards->black_attacks |= generate_piece_attacks(BLACK, QUEEN, bitboards->black_queens);
-    bitboards->black_attacks |= generate_piece_attacks(BLACK, KING, bitboards->black_king);
-    // printf("Black\n");
-    // print_bitboard(bitboards->black_attacks);
-    // printf("White\n");
-    // print_bitboard(bitboards->white_attacks);
-    // printf("w king\n");
-
-    // printf("b king\n");
-    // print_bitboard(bitboards->black_king);
-    // print_bitboard(bitboards->white_king);
-
-    
-
-
-
-    // printf("black\n");
-    // print_bitboard(bitboards->black_pieces);
-    // printf("white\n");
-    // print_bitboard(bitboards->white_pieces);
-
-
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, PAWN, bitboards->black_pawns, bitboards);
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, KNIGHT, bitboards->black_knights, bitboards);
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, BISHOP, bitboards->black_bishops, bitboards);
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, ROOK, bitboards->black_rooks, bitboards);
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, QUEEN, bitboards->black_queens, bitboards);
+    bitboards->black_attacks |= generate_piece_attacks(BLACK, KING, bitboards->black_king, bitboards);
 }
 
 void initialize_bitboards() {
@@ -214,11 +194,9 @@ int get_bit(Bitboard board, int index) {
     return (board >> index) & 1;
 }
 
-void delete_piece_from_bitboard(int index, Bitboard *bb)
-{
+void delete_piece_from_bitboard(int index, Bitboard *bb) {
     set_bit(bb , index, 0); 
 }
-
 
 void set_bit(Bitboard *board, int index, int value) {
     if (value)
@@ -227,8 +205,7 @@ void set_bit(Bitboard *board, int index, int value) {
         *board &= ~(1ULL << index);
 }
 
-void move_piece_bb(Bitboard *start_board, Bitboard *end_board, int start_index, int end_index)
-{
+void move_piece_bb(Bitboard *start_board, Bitboard *end_board, int start_index, int end_index) {
     set_bit(end_board, end_index, 1);
     set_bit(start_board, start_index, 0);
 }
@@ -242,7 +219,6 @@ t_game *clone_t_game(t_game *game) {
     return new_game;
 }
 
-void free_t_game(t_game *game)
-{
+void free_t_game(t_game *game) {
     free(game);
 }

@@ -44,21 +44,23 @@ void switch_ply()
     else
         game->white_to_play = 1;
 
-    printf("\n\nswitch ply\n\n");
+    printf("\n\n<---------- NEXT ROUND --------> ply\n\n");
 }
 
-int check_if_a_piece_is_eaten(t_current_ply c_ply)
+int check_if_a_piece_is_eaten(t_current_ply c_ply, Bitboard opponent_board)
 {
     if (c_ply.target_status == EMPTY)
         return (0);
+    printf("Move end\n");
+    print_bitboard(c_ply.move_end);
     if (game->white_to_play)
     {
-        if (c_ply.move_end & game->bitboards->black_pawns == 1)
+        if (c_ply.move_end & opponent_board)
             return (1);
     }
     else
     {
-        if (c_ply.move_end & game->bitboards->white_pawns == 1)
+        if (c_ply.move_end & opponent_board)
             return (1);
     }
 
@@ -107,7 +109,10 @@ int try_to_move(int start_square, int end_square) {
     // print_bitboard(c_ply.move_end);
     c_ply.piece_type = start_case->status;
     c_ply.target_status = end_case->status;
+    set_bit(&c_ply.move_start, start_square, 1);
+    set_bit(&c_ply.move_end, end_square, 1);
     // Check if move is legal accorldy to the type of piece
+
     if (is_move_legal(start_square, end_square, c_ply))
     {
         if (c_ply.target_status != EMPTY)
@@ -122,10 +127,16 @@ int try_to_move(int start_square, int end_square) {
 
         // }
         update_bitboards(game->bitboards);
-        printf("<======BLACK======>\n");
+        printf("<======BLACK PIECES======>\n");
         print_bitboard(game->bitboards->black_pieces);
-        printf("<======WHITE======>\n");
+        printf("<-- Attacks  board -->\n");
+        print_bitboard(game->bitboards->black_attacks);
+        printf("<======WHITE PIECES======>\n");
         print_bitboard(game->bitboards->white_pieces);
+        printf("<-- Attacks  board -->\n");
+        print_bitboard(game->bitboards->white_attacks);
+
+
         //print_bitboard(game->bitboards->white_knights);
         //print_combined_bitboard(game->bitboards);
 

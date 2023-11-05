@@ -65,33 +65,40 @@ uint64_t get_horizontal_vertical_attacks(uint64_t position, uint64_t occupied_sq
             while (1) {
                 if (dir == 0) // E
                 {
-                    if ((pos & 0x8080808080808080ULL))
-                        break;
-                    attack_bit = (attack_bit << 1);
-                }
-                else if (dir == 1) // W
-                {
                     if ((pos & 0x0101010101010101ULL))
                         break;
                     attack_bit = (attack_bit >> 1);
+                    if (attack_bit & 0x8080808080808080ULL)
+                        break;
+                }
+                else if (dir == 1) // W
+                {
+                    if ((pos & 0x8080808080808080ULL))
+                        break;
+                    attack_bit = (attack_bit << 1);
+                    if (attack_bit & 0x0101010101010101ULL)
+                        break;
                 }
                 else if (dir == 2) // N
                 {
                     if ((pos & 0x00000000000000FFULL))
                         break;
                     attack_bit = (attack_bit >> 8);
+                    if (attack_bit & 0xFF00000000000000ULL)
+                        break;
                 }
                 else if (dir == 3) // S
                 {
                     if ((pos & 0xFF00000000000000ULL))
                         break;
                     attack_bit = (attack_bit << 8);
+                    if (attack_bit & 0x00000000000000FFULL) 
+                        break;   
                 }
                 
                 if ((attack_bit) == 0) break;
                 attacks |= attack_bit;
                 if (attack_bit & occupied_squares) break;
-                if (attack_bit & sides) break;
             }
         }
     }
@@ -100,7 +107,7 @@ uint64_t get_horizontal_vertical_attacks(uint64_t position, uint64_t occupied_sq
 
 
 
-uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position) {
+uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position, t_bb *bb) {
     uint64_t attacks = 0;
     uint64_t temp_positions;
     switch (piece_type) {
@@ -158,15 +165,15 @@ uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position) {
             attacks |= temp_positions;
             break;
 		case BISHOP:
-            attacks |= get_diagonal_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
+            attacks |= get_diagonal_attacks(position, bb->white_pieces | bb->black_pieces);
             break;
 
         case ROOK:
-            attacks |= get_horizontal_vertical_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
+            attacks |= get_horizontal_vertical_attacks(position, bb->white_pieces | bb->black_pieces);
             break;
         case QUEEN:
-            attacks |= get_diagonal_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
-            attacks |= get_horizontal_vertical_attacks(position, game->bitboards->white_pieces | game->bitboards->black_pieces);
+            attacks |= get_diagonal_attacks(position, bb->white_pieces | bb->black_pieces);
+            attacks |= get_horizontal_vertical_attacks(position, bb->white_pieces | bb->black_pieces);
             break;
         case KING:
             // North

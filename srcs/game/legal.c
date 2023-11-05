@@ -160,8 +160,11 @@ int is_king_in_check(t_bb bb, int is_white_to_play) {
     else
         printf("Black is playing\n");
     // Determine the position of the king
-    king_position = (is_white_to_play == 1) ? game->bitboards->white_king : game->bitboards->black_king;
+    king_position = (is_white_to_play == 1) ? bb.white_king : bb.black_king;
     
+
+    printf("King position\n");
+    print_bitboard(king_position);
     // Check if the king is attacked
     if ((is_white_to_play == 1 && (bb.black_attacks & king_position)) || 
         (is_white_to_play == 0 && (bb.white_attacks & king_position))) {
@@ -176,21 +179,40 @@ int is_king_in_check_after_move(t_bb bb, int piece_type, int start_square, int e
     // printf("Start_square %d\n", start_square);
     // printf("End_square %d\n", end_square);
     make_move_bitboards(&bb, piece_type, start_square, end_square);
+
+    Bitboard opBoard;
+
+    if (game->white_to_play == 1)
+        opBoard = bb.black_pieces;
+    else
+        opBoard = bb.white_pieces;
+    
     update_bitboards(&bb);
-    if (check_if_a_piece_is_eaten(ply) == 1)
+    if (check_if_a_piece_is_eaten(ply, opBoard) == 1)
     {
         printf("<--------PIECE EATEN ------->\n");
         delete_piece_from_bitboard(end_square, getBoard(&bb, piece_type));
-        //update_bitboards(&bb, piece_type, start_square, end_square);
+        update_bitboards(&bb);
+
+    }
+    else
+    {
+        printf("<--------NO PIECE EATEN ------->\n");
 
     }
 
+    printf("Oponent Bitboard after move\n");
+    print_bitboard(opBoard);
     //print_bitboard(bb->white_attacks);
 
-    update_bitboards(&bb);
-    printf("King Check Checker\n");
+    printf("Bitboard after move\n");
+    print_bitboard(bb.black_pieces);
+    printf("--------------------\n");
+    print_bitboard(bb.white_pieces);
+
+    printf("White attacks\n");
     print_bitboard(bb.white_attacks);
-    printf("Black\n");
+    printf("Black attacks\n");
     print_bitboard(bb.black_attacks);
     int in_check = is_king_in_check(bb, game->white_to_play);
     return in_check;
@@ -205,7 +227,6 @@ int is_move_legal(int start_square, int end_case, t_current_ply ply)
        return (0); // Move puts king in check
     } 
     
-
     switch (ply.piece_type & COLOR_MASK)
 	{
         case PAWN:
