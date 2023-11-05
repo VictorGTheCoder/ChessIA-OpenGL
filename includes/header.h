@@ -113,6 +113,8 @@ typedef struct s_current_ply
 
 	int piece_type;
 	int target_status;
+	
+	int white_to_play;
 } t_current_ply;
 
 typedef struct s_game
@@ -210,7 +212,7 @@ void update_bitboards(t_bb *bitboards);
 void make_move_bitboards(t_bb *bitboards,  int piece_type, int start_square, int end_square);
 
 uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position, t_bb *bb);
-int check_if_a_piece_is_eaten(t_current_ply ply, Bitboard opponent_board);
+int check_if_a_piece_is_eaten(t_current_ply ply, t_bb bb);
 void delete_piece_from_bitboard(int index, Bitboard *bb);
 
 

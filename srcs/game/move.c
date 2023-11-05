@@ -47,21 +47,41 @@ void switch_ply()
     printf("\n\n<---------- NEXT ROUND --------> ply\n\n");
 }
 
-int check_if_a_piece_is_eaten(t_current_ply c_ply, Bitboard opponent_board)
+int check_if_a_piece_is_eaten(t_current_ply c_ply, t_bb bb)
 {
     if (c_ply.target_status == EMPTY)
         return (0);
     printf("Move end\n");
     print_bitboard(c_ply.move_end);
-    if (game->white_to_play)
+    if (c_ply.white_to_play)
     {
-        if (c_ply.move_end & opponent_board)
-            return (1);
+        if (c_ply.move_end & bb.black_bishops)
+            return BISHOP | BLACK;
+        if (c_ply.move_end & bb.black_rooks)
+            return ROOK | BLACK;
+        if (c_ply.move_end & bb.black_queens)
+            return QUEEN | BLACK;
+        if (c_ply.move_end & bb.black_knights)
+            return KNIGHT | BLACK;
+        if (c_ply.move_end & bb.black_pawns)
+            return PAWN | BLACK;
+        if (c_ply.move_end & bb.black_king)
+            return KING | BLACK;
     }
     else
     {
-        if (c_ply.move_end & opponent_board)
-            return (1);
+        if (c_ply.move_end & bb.white_bishops)
+            return BISHOP | WHITE;
+        if (c_ply.move_end & bb.white_rooks)
+            return ROOK | WHITE;
+        if (c_ply.move_end & bb.white_queens)
+            return QUEEN | WHITE;
+        if (c_ply.move_end & bb.white_knights)
+            return KNIGHT | WHITE;
+        if (c_ply.move_end & bb.white_pawns)
+            return PAWN | WHITE;
+        if (c_ply.move_end & bb.white_king)
+            return KING | WHITE;
     }
 
     // if (end_case->status == EMPTY)
@@ -97,6 +117,7 @@ int try_to_move(int start_square, int end_square) {
 
     c_ply.move_start = 0;
     c_ply.move_end = 0;
+    c_ply.white_to_play = game->white_to_play;
     t_case *start_case = &(gui->case_list[start_square]);
     t_case *end_case = &(gui->case_list[end_square]);
 

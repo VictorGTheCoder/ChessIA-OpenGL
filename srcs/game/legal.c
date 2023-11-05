@@ -188,10 +188,11 @@ int is_king_in_check_after_move(t_bb bb, int piece_type, int start_square, int e
         opBoard = bb.white_pieces;
     
     update_bitboards(&bb);
-    if (check_if_a_piece_is_eaten(ply, opBoard) == 1)
+    int eaten_piece = check_if_a_piece_is_eaten(ply, bb);
+    if (eaten_piece != EMPTY)
     {
         printf("<--------PIECE EATEN ------->\n");
-        delete_piece_from_bitboard(end_square, getBoard(&bb, piece_type));
+        delete_piece_from_bitboard(end_square, getBoard(&bb, eaten_piece));
         update_bitboards(&bb);
 
     }
