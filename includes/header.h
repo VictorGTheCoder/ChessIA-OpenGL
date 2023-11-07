@@ -175,7 +175,7 @@ void	mouse_hook(int button, int state, int x, int y);
 /*int		is_king_in_check(t_gui *gui, int is_white_king);
 int		move_is_valid(t_game *game, int start_square, int end_square);
 int		move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square);*/
-int		try_to_move(int start_square, int end_square);
+int try_to_move(t_bb *bitboards, int start_square, int end_square, int is_white);
 int		is_white_piece(t_case *square);
 GLuint	get_pieces_image(t_gui *gui, t_case *square);
 void	deselect_piece(t_gui *gui, t_case *square);
@@ -192,7 +192,7 @@ void random_black_move(t_gui *gui);
 void	display_board(void);
 int has_valid_moves(t_gui *gui, int is_white);
 void process_AI(t_game *game);
-int generate_valid_moves(t_game *game, int is_white, t_move *valid_moves);
+int generate_valid_moves(t_bb *bb, int is_white, t_move *valid_moves);
 
 
 void initialize_bitboards();
@@ -206,7 +206,7 @@ void free_t_game(t_game *game);
 int get_status_by_index(int index);
 
 
-int is_move_legal(int start_square, int end_case, t_current_ply ply);
+int is_move_legal(t_bb *bitboards, int start_square, int end_case, t_current_ply ply, int is_white);
 Bitboard *getBoard(t_bb *bitaboards, int piece_type);
 void update_bitboards(t_bb *bitboards);
 void make_move_bitboards(t_bb *bitboards,  int piece_type, int start_square, int end_square);

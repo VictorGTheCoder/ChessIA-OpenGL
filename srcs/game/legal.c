@@ -1,6 +1,6 @@
 #include "../../includes/header.h"
 
-int is_legal_pawn_move(t_game *game, int start_square, int end_square) {
+int is_legal_pawn_move(t_bb *bitboards, int start_square, int end_square, int is_white) {
     int start_rank = 7 - start_square / 8;
     int start_file = start_square % 8;
     int end_rank = 7 - end_square / 8;
@@ -10,22 +10,22 @@ int is_legal_pawn_move(t_game *game, int start_square, int end_square) {
     printf("Start (%d, %d) end (%d, %d)\n", start_rank, start_file, end_rank, end_file);
     uint64_t mask = 1ULL << end_square;
     
-    if (game->white_to_play) {
+    if (is_white) {
         if (end_file == start_file) {
-            if ((start_rank == 1 && end_rank == start_rank + 2 && !(game->bitboards->black_pieces & mask)) || // Double step from starting position
-                (end_rank == start_rank + 1 && !(game->bitboards->black_pieces & mask))) { // Single step
+            if ((start_rank == 1 && end_rank == start_rank + 2 && !(bitboards->black_pieces & mask)) || // Double step from starting position
+                (end_rank == start_rank + 1 && !(bitboards->black_pieces & mask))) { // Single step
                 return 1;
             }
-        } else if (abs(end_file - start_file) == 1 && end_rank == start_rank + 1 && (game->bitboards->black_pieces & mask)) { // Capturing
+        } else if (abs(end_file - start_file) == 1 && end_rank == start_rank + 1 && (bitboards->black_pieces & mask)) { // Capturing
             return 1;
         }
     } else {
         if (end_file == start_file) {
-            if ((start_rank == 6 && end_rank == start_rank - 2 && !(game->bitboards->white_pieces & mask)) || // Double step from starting position
-                (end_rank == start_rank - 1 && !(game->bitboards->white_pieces & mask))) { // Single step
+            if ((start_rank == 6 && end_rank == start_rank - 2 && !(bitboards->white_pieces & mask)) || // Double step from starting position
+                (end_rank == start_rank - 1 && !(bitboards->white_pieces & mask))) { // Single step
                 return 1;
             }
-        } else if (abs(end_file - start_file) == 1 && end_rank == start_rank - 1 && (game->bitboards->white_pieces & mask)) { // Capturing
+        } else if (abs(end_file - start_file) == 1 && end_rank == start_rank - 1 && (bitboards->white_pieces & mask)) { // Capturing
             return 1;
         }
     }
@@ -33,7 +33,7 @@ int is_legal_pawn_move(t_game *game, int start_square, int end_square) {
     return 0; // Illegal move
 }
 
-int is_legal_rook_move(t_game *game, int start_square, int end_square) {
+int is_legal_rook_move(t_bb *bitboards, int start_square, int end_square) {
     int start_rank = start_square / 8;
     int start_file = start_square % 8;
     int end_rank = end_square / 8;
@@ -52,7 +52,7 @@ int is_legal_rook_move(t_game *game, int start_square, int end_square) {
         step = (start_file < end_file) ? 1 : -1;
         for (int file = start_file + step; file != end_file; file += step) {
             mask = 1ULL << (start_rank * 8 + file);
-            if (game->bitboards->white_pieces & mask || game->bitboards->black_pieces & mask) {
+            if (bitboards->white_pieces & mask || bitboards->black_pieces & mask) {
                 printf("Path is blocked 1\n");
                 return 0; // Path is blocked
             }
@@ -61,7 +61,7 @@ int is_legal_rook_move(t_game *game, int start_square, int end_square) {
         step = (start_rank < end_rank) ? 8 : -8;
         for (int square = start_square + step; square != end_square; square += step) {
             mask = 1ULL << square;
-            if (game->bitboards->white_pieces & mask || game->bitboards->black_pieces & mask) {
+            if (bitboards->white_pieces & mask || bitboards->black_pieces & mask) {
                 printf("Path is blocked 2\n");
                 return 0; // Path is blocked
             }
@@ -70,8 +70,8 @@ int is_legal_rook_move(t_game *game, int start_square, int end_square) {
 
     // // Check if the destination square is empty or has an opponents piece
     // mask = 1ULL << end_square;
-    // if ((game->bitboards->white_pieces & mask && game->white_to_play) ||
-    //     (game->bitboards->black_pieces & mask && !game->white_to_play)) {
+    // if ((game->bitboards->white_pieces & mask && is_white) ||
+    //     (game->bitboards->black_pieces & mask && !is_white)) {
     //     printf("Destination Error\n");
     //     return 0;
     // }
@@ -79,7 +79,7 @@ int is_legal_rook_move(t_game *game, int start_square, int end_square) {
     return 1;
 }
 
-int is_legal_bishop_move(t_game *game, int start_square, int end_square) {
+int is_legal_bishop_move(t_bb *bitboards, int start_square, int end_square) {
     int diff_rank = abs((end_square / 8) - (start_square / 8));
     int diff_file = abs((end_square % 8) - (start_square % 8));
     
@@ -90,25 +90,26 @@ int is_legal_bishop_move(t_game *game, int start_square, int end_square) {
     int rank_step = (end_square / 8 > start_square / 8) ? 8 : -8;
     int file_step = (end_square % 8 > start_square % 8) ? 1 : -1;
     int step = rank_step + file_step;
+    printf("Start %d end %d\n", start_square, end_square);
     
     for (int square = start_square + step; square != end_square; square += step) {
         uint64_t mask = 1ULL << square;
-        if (game->bitboards->white_pieces & mask || game->bitboards->black_pieces & mask) {
+        if (bitboards->white_pieces & mask || bitboards->black_pieces & mask) {
             return 0; // Path is blocked
         }
     }
     
     // Check if the destination square is empty or has an opponent's piece
     // uint64_t mask = 1ULL << end_square;
-    // if ((game->bitboards->white_pieces & mask && game->white_to_play) ||
-    //     (game->bitboards->black_pieces & mask && !game->white_to_play)) {
+    // if ((game->bitboards->white_pieces & mask && is_white) ||
+    //     (game->bitboards->black_pieces & mask && !is_white)) {
     //     return 0;
     // }
     
     return 1;
 }
 
-int is_legal_knight_move(t_game *game, int start_square, int end_square) {
+int is_legal_knight_move(t_bb *bb, int start_square, int end_square) {
     int diff_rank = abs((end_square / 8) - (start_square / 8));
     int diff_file = abs((end_square % 8) - (start_square % 8));
     
@@ -119,20 +120,20 @@ int is_legal_knight_move(t_game *game, int start_square, int end_square) {
     
     // Check if the destination square is empty or has an opponent's piece
     // uint64_t mask = 1ULL << end_square;
-    // if ((game->bitboards->white_pieces & mask && game->white_to_play) ||
-    //     (game->bitboards->black_pieces & mask && !game->white_to_play)) {
+    // if ((game->bitboards->white_pieces & mask && is_white) ||
+    //     (game->bitboards->black_pieces & mask && !is_white)) {
     //     return 0;
     // }
     
     return 1;
 }
 
-int is_legal_queen_move(t_game *game, int start_square, int end_square) {
-    return is_legal_rook_move(game, start_square, end_square) ||
-           is_legal_bishop_move(game, start_square, end_square);
+int is_legal_queen_move(t_bb *bb, int start_square, int end_square) {
+    return is_legal_rook_move(bb, start_square, end_square) ||
+           is_legal_bishop_move(bb, start_square, end_square);
 }
 
-int is_legal_king_move(t_game *game, int start_square, int end_square) {
+int is_legal_king_move(t_bb *bb, int start_square, int end_square) {
     int diff_rank = abs((end_square / 8) - (start_square / 8));
     int diff_file = abs((end_square % 8) - (start_square % 8));
     
@@ -142,8 +143,8 @@ int is_legal_king_move(t_game *game, int start_square, int end_square) {
     
     // Check if the destination square is empty or has an opponent's piece
     // uint64_t mask = 1ULL << end_square;
-    // if ((game->bitboards->white_pieces & mask && game->white_to_play) ||
-    //     (game->bitboards->black_pieces & mask && !game->white_to_play)) {
+    // if ((game->bitboards->white_pieces & mask && is_white) ||
+    //     (game->bitboards->black_pieces & mask && !is_white)) {
     //     return 0;
     // }
     
@@ -202,24 +203,24 @@ int is_king_in_check_after_move(t_bb bb, int piece_type, int start_square, int e
 
     }
 
-    printf("Oponent Bitboard after move\n");
-    print_bitboard(opBoard);
-    //print_bitboard(bb->white_attacks);
+    // printf("Oponent Bitboard after move\n");
+    // print_bitboard(opBoard);
+    // //print_bitboard(bb->white_attacks);
 
-    printf("Bitboard after move\n");
-    print_bitboard(bb.black_pieces);
-    printf("--------------------\n");
-    print_bitboard(bb.white_pieces);
+    // printf("Bitboard after move\n");
+    // print_bitboard(bb.black_pieces);
+    // printf("--------------------\n");
+    // print_bitboard(bb.white_pieces);
 
-    printf("White attacks\n");
-    print_bitboard(bb.white_attacks);
-    printf("Black attacks\n");
-    print_bitboard(bb.black_attacks);
+    // printf("White attacks\n");
+    // print_bitboard(bb.white_attacks);
+    // printf("Black attacks\n");
+    // print_bitboard(bb.black_attacks);
     int in_check = is_king_in_check(bb, game->white_to_play);
     return in_check;
 }
 
-int is_move_legal(int start_square, int end_case, t_current_ply ply)
+int is_move_legal(t_bb *bitboards, int start_square, int end_case, t_current_ply ply, int is_white)
 {
 	int result = 0;
     if (is_king_in_check_after_move(*(game->bitboards), gui->case_list[start_square].status, start_square, end_case, ply))
@@ -231,22 +232,22 @@ int is_move_legal(int start_square, int end_case, t_current_ply ply)
     switch (ply.piece_type & COLOR_MASK)
 	{
         case PAWN:
-			result = is_legal_pawn_move(game, start_square, end_case);
+			result = is_legal_pawn_move(bitboards, start_square, end_case, is_white);
             break;
         case ROOK:
-            result = is_legal_rook_move(game, start_square, end_case);    
+            result = is_legal_rook_move(bitboards, start_square, end_case);    
             break;
         case KNIGHT:
-            result = is_legal_knight_move(game, start_square, end_case);
+            result = is_legal_knight_move(bitboards, start_square, end_case);
             break;
         case BISHOP:
-            result = is_legal_bishop_move(game, start_square, end_case);
+            result = is_legal_bishop_move(bitboards, start_square, end_case);
             break;
         case QUEEN:
-            result = is_legal_queen_move(game, start_square, end_case);
+            result = is_legal_queen_move(bitboards, start_square, end_case);
             break;
         case KING:
-            result = is_legal_king_move(game, start_square, end_case);
+            result = is_legal_king_move(bitboards, start_square, end_case);
             break;
 	}
 	return (result);

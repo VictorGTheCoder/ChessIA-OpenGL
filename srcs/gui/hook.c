@@ -35,7 +35,7 @@ void mouse_hook(int button, int state, int x, int y)
 				if (gui->square_selected != NULL)
 				{
 
-					if ((try_to_move(get_square_from_xy(gui->square_selected->startX, gui->square_selected->startY), square_n) == -1))
+					if ((try_to_move(game->bitboards, get_square_from_xy(gui->square_selected->startX, gui->square_selected->startY), square_n, game->white_to_play) == -1))
 					{
 						case_selected(gui, square);
 					}

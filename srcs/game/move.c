@@ -112,7 +112,8 @@ int check_if_a_piece_is_eaten(t_current_ply c_ply, t_bb bb)
 }
 
 
-int try_to_move(int start_square, int end_square) {
+int try_to_move(t_bb *bitboards, int start_square, int end_square, int is_white)
+{
     t_current_ply c_ply;
 
     c_ply.move_start = 0;
@@ -134,7 +135,7 @@ int try_to_move(int start_square, int end_square) {
     set_bit(&c_ply.move_end, end_square, 1);
     // Check if move is legal accorldy to the type of piece
 
-    if (is_move_legal(start_square, end_square, c_ply))
+    if (is_move_legal(bitboards, start_square, end_square, c_ply, is_white))
     {
         if (c_ply.target_status != EMPTY)
         {
@@ -147,15 +148,15 @@ int try_to_move(int start_square, int end_square) {
             
 
         // }
-        update_bitboards(game->bitboards);
-        printf("<======BLACK PIECES======>\n");
-        print_bitboard(game->bitboards->black_pieces);
-        printf("<-- Attacks  board -->\n");
-        print_bitboard(game->bitboards->black_attacks);
-        printf("<======WHITE PIECES======>\n");
-        print_bitboard(game->bitboards->white_pieces);
-        printf("<-- Attacks  board -->\n");
-        print_bitboard(game->bitboards->white_attacks);
+        // update_bitboards(game->bitboards);
+        // printf("<======BLACK PIECES======>\n");
+        // print_bitboard(game->bitboards->black_pieces);
+        // printf("<-- Attacks  board -->\n");
+        // print_bitboard(game->bitboards->black_attacks);
+        // printf("<======WHITE PIECES======>\n");
+        // print_bitboard(game->bitboards->white_pieces);
+        // printf("<-- Attacks  board -->\n");
+        // print_bitboard(game->bitboards->white_attacks);
 
 
         //print_bitboard(game->bitboards->white_knights);
@@ -164,6 +165,7 @@ int try_to_move(int start_square, int end_square) {
         move_piece(gui, start_case, end_case);
 
         switch_ply();
+        //process_AI(game);
         return (1);
     }
     printf("Illegal move\n");

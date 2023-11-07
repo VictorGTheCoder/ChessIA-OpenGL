@@ -31,16 +31,6 @@ int piece_value(t_case *piece)
 	}
 }
 
-int generate_valid_moves(t_game *game, int is_white, t_move *valid_moves)
-{
-    int moves_count = 0;
-    
-
-
-    return (moves_count);
-}
-
-
 
 
 int evaluate_board(t_gui *gui)
@@ -101,6 +91,12 @@ int evaluate_board(t_gui *gui)
 }*/
 
 void process_AI(t_game *game) {
+    t_move *valide_moves = malloc(sizeof(t_move) * 1000);
+    int i = generate_valid_moves(game->bitboards, game->white_to_play, valide_moves);
+    printf("Numbe of valide moves %d\n", i);
+    if (i == 0) return;
+    make_move_bitboards(game->bitboards, get_status_by_index(valide_moves[0].start_index), valide_moves[0].start_index, valide_moves[0].end_index);
+    move_piece(gui, valide_moves[0].start_square, valide_moves[0].end_square);
     /*t_move valid_moves[64 * 64];
     t_game *temp_game = clone_t_game(game);
     int move_count = generate_valid_moves(temp_game, 0, valid_moves);
@@ -163,3 +159,7 @@ void process_AI(t_game *game) {
 
 	move_piece(gui, start_square, end_square);
 }*/
+
+
+
+
