@@ -83,32 +83,6 @@ int check_if_a_piece_is_eaten(t_current_ply c_ply, t_bb bb)
         if (c_ply.move_end & bb.white_king)
             return KING | WHITE;
     }
-
-    // if (end_case->status == EMPTY)
-    //     return ;
-    // int is_white = is_white_piece(end_case) == 1;
-    // if (is_white == 1)
-    // {
-    //     if (!game->white_to_play)
-    //     {
-    //         set_bit(getBoard(end_case->status) ,get_square_from_xy(end_case->startX, end_case->startY), 0); 
-    //         printf("White piece %d is dead at square %d\n", end_case->status, get_square_from_xy(end_case->startX, end_case->startY));
-
-    //     }
-    // }
-    // else if (is_white == 0)
-    // {
-    //     if (game->white_to_play)
-    //     {
-
-            
-    //         printf("Black piece %d is dead at square %d\n", end_case->status, get_square_from_xy(end_case->startX, end_case->startY));
-    //     }
-    // }
-    // else if (is_white == -1)
-    // {
-    //     printf("Error: Piece is not white or black\n");
-    // }
 }
 
 
@@ -157,10 +131,6 @@ int try_to_move(t_bb *bitboards, int start_square, int end_square, int is_white)
         // print_bitboard(game->bitboards->white_pieces);
         // printf("<-- Attacks  board -->\n");
         // print_bitboard(game->bitboards->white_attacks);
-
-
-        //print_bitboard(game->bitboards->white_knights);
-        //print_combined_bitboard(game->bitboards);
 
         move_piece(gui, start_case, end_case);
 
