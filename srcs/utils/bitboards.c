@@ -63,7 +63,30 @@ void make_move_bitboards(t_bb *bitboards,  int piece_type, int start_square, int
 {
     Bitboard *bb = getBoard(bitboards, piece_type);
 
-
+    printf("----------getBoard--------\n");
+    print_bitboard(*bb);
+    printf("Piece type: %d\n", piece_type);
+    printf("Start square: %d\n", start_square);
+    printf("End square: %d\n", end_square);
+    // if (!piece_type || !start_square || !end_square)
+    // {
+    //     printf("ERROR IN MAKE MOVE BITBOARDS\n");
+    //     exit(EXIT_FAILURE);
+    // }
+    // if (piece_type == PAWN | BLACK)
+    // {
+    //     if (end_square / 8 == 0)
+    //     {
+    //         piece_type = QUEEN | BLACK;
+    //     }
+    // }
+    // else if (piece_type == PAWN | WHITE)
+    // {
+    //     if (end_square / 8 == 7)
+    //     {
+    //         piece_type = QUEEN | WHITE;
+    //     }
+    // }
     uint64_t start_mask = 1ULL << (start_square);
     uint64_t end_mask = 1ULL << (end_square);
 

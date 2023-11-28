@@ -43,7 +43,6 @@ void switch_ply()
         game->white_to_play = 0;
     else
         game->white_to_play = 1;
-
     printf("\n\n<---------- NEXT ROUND --------> ply\n\n");
 }
 
@@ -93,8 +92,6 @@ int try_to_move(t_bb *bitboards, int start_square, int end_square, int is_white)
     c_ply.move_start = 0;
     c_ply.move_end = 0;
     c_ply.white_to_play = game->white_to_play;
-    t_case *start_case = &(gui->case_list[start_square]);
-    t_case *end_case = &(gui->case_list[end_square]);
 
     // set_bit(&c_ply.move_start, start_square, 1);
     // printf("Start Move\n");
@@ -103,12 +100,17 @@ int try_to_move(t_bb *bitboards, int start_square, int end_square, int is_white)
 
     // set_bit(&c_ply.move_end, end_square, 1);
     // print_bitboard(c_ply.move_end);
-    c_ply.piece_type = start_case->status;
-    c_ply.target_status = end_case->status;
+    c_ply.piece_type = get_status_by_index(start_square, bitboards);
+    c_ply.target_status = get_status_by_index(end_square, bitboards);
     set_bit(&c_ply.move_start, start_square, 1);
     set_bit(&c_ply.move_end, end_square, 1);
     // Check if move is legal accorldy to the type of piece
 
+
+    if (c_ply.piece_type == EMPTY)
+    {
+        return 0;
+    }
     if (is_move_legal(bitboards, start_square, end_square, c_ply, is_white))
     {
         if (c_ply.target_status != EMPTY)
@@ -132,10 +134,11 @@ int try_to_move(t_bb *bitboards, int start_square, int end_square, int is_white)
         // printf("<-- Attacks  board -->\n");
         // print_bitboard(game->bitboards->white_attacks);
 
+        t_case *start_case = &gui->case_list[start_square];
+        t_case *end_case = &gui->case_list[end_square];
         move_piece(gui, start_case, end_case);
 
         switch_ply();
-        //process_AI(game);
         return (1);
     }
     printf("Illegal move\n");

@@ -95,7 +95,7 @@ void process_AI(t_game *game) {
     int i = generate_valid_moves(game->bitboards, game->white_to_play, valide_moves);
     printf("Numbe of valide moves %d\n", i);
     if (i == 0) return;
-    make_move_bitboards(game->bitboards, get_status_by_index(valide_moves[0].start_index), valide_moves[0].start_index, valide_moves[0].end_index);
+    make_move_bitboards(game->bitboards, get_status_by_index(valide_moves[0].start_index, game->bitboards), valide_moves[0].start_index, valide_moves[0].end_index);
     move_piece(gui, valide_moves[0].start_square, valide_moves[0].end_square);
     /*t_move valid_moves[64 * 64];
     t_game *temp_game = clone_t_game(game);

@@ -223,7 +223,7 @@ int is_king_in_check_after_move(t_bb bb, int piece_type, int start_square, int e
 int is_move_legal(t_bb *bitboards, int start_square, int end_case, t_current_ply ply, int is_white)
 {
 	int result = 0;
-    if (is_king_in_check_after_move(*(game->bitboards), gui->case_list[start_square].status, start_square, end_case, ply))
+    if (is_king_in_check_after_move(*bitboards, ply.piece_type, start_square, end_case, ply))
     {
         printf("[ILLEGAL MOVE] King is check\n");
        return (0); // Move puts king in check

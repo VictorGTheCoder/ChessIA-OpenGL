@@ -192,7 +192,6 @@ void generate_legal_bishop_moves(t_bb *bitboards, int *move_count, t_move *valid
 int generate_valid_moves(t_bb *bitboards, int is_white, t_move *valid_moves)
 {
     int moves_count = 0;
-    (void) is_white;
 	(void) valid_moves;
 
 	valid_moves = malloc(sizeof(t_move) * 400);
@@ -217,6 +216,7 @@ int generate_valid_moves(t_bb *bitboards, int is_white, t_move *valid_moves)
         
     }
     printf("Legal moves count [%d]\n", moves_count);
+    //exit(EXIT_FAILURE);
     return (moves_count);
 }
 

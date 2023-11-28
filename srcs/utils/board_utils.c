@@ -57,36 +57,36 @@ GLuint get_pieces_image(t_gui *gui, t_case *square)
     }
 }
 
-int get_status_by_index(int index)
+int get_status_by_index(int index, t_bb *bitboards)
 {
     int square_status = 0;
-    if (get_bit(game->bitboards->black_pieces | game->bitboards->white_pieces, index) == 0)
+    if (get_bit(bitboards->black_pieces | bitboards->white_pieces, index) == 0)
         square_status = EMPTY;
     else
     {
-        if (get_bit(game->bitboards->black_pawns, index) == 1)
+        if (get_bit(bitboards->black_pawns, index) == 1)
             square_status = PAWN | BLACK;
-        else if (get_bit(game->bitboards->black_knights, index) == 1)
+        else if (get_bit(bitboards->black_knights, index) == 1)
             square_status = KNIGHT | BLACK;
-        else if (get_bit(game->bitboards->black_bishops, index) == 1)
+        else if (get_bit(bitboards->black_bishops, index) == 1)
             square_status = BISHOP | BLACK;
-        else if (get_bit(game->bitboards->black_rooks, index) == 1)
+        else if (get_bit(bitboards->black_rooks, index) == 1)
             square_status = ROOK | BLACK;
-        else if (get_bit(game->bitboards->black_queens, index) == 1)
+        else if (get_bit(bitboards->black_queens, index) == 1)
             square_status = QUEEN | BLACK;
-        else if (get_bit(game->bitboards->black_king, index) == 1)
+        else if (get_bit(bitboards->black_king, index) == 1)
             square_status = KING | BLACK;
-        else if (get_bit(game->bitboards->white_pawns, index) == 1)
+        else if (get_bit(bitboards->white_pawns, index) == 1)
             square_status = PAWN | WHITE;
-        else if (get_bit(game->bitboards->white_knights, index) == 1)
+        else if (get_bit(bitboards->white_knights, index) == 1)
             square_status = KNIGHT | WHITE;
-        else if (get_bit(game->bitboards->white_bishops, index) == 1)
+        else if (get_bit(bitboards->white_bishops, index) == 1)
             square_status = BISHOP | WHITE;
-        else if (get_bit(game->bitboards->white_rooks, index) == 1)
+        else if (get_bit(bitboards->white_rooks, index) == 1)
             square_status = ROOK | WHITE;
-        else if (get_bit(game->bitboards->white_queens, index) == 1)
+        else if (get_bit(bitboards->white_queens, index) == 1)
             square_status = QUEEN | WHITE;
-        else if (get_bit(game->bitboards->white_king, index) == 1)
+        else if (get_bit(bitboards->white_king, index) == 1)
             square_status = KING | WHITE;
     }
 
