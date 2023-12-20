@@ -1,11 +1,11 @@
 #include "../../includes/header.h"
 
-int is_legal_rook_move(t_game *game, int start_square, int end_square);
-int is_legal_pawn_move(t_game *game, int start_square, int end_square);
-int is_legal_king_move(t_game *game, int start_square, int end_square);
-int is_legal_bishop_move(t_game *game, int start_square, int end_square);
-int is_legal_knight_move(t_game *game, int start_square, int end_square);
-int is_legal_queen_move(t_game *game, int start_square, int end_square);
+int is_legal_rook_move(t_bb *bb, int start_square, int end_square);
+int is_legal_pawn_move(t_bb *bb, int start_square, int end_square);
+int is_legal_king_move(t_bb *bb, int start_square, int end_square);
+int is_legal_bishop_move(t_bb *bb, int start_square, int end_square);
+int is_legal_knight_move(t_bb *bb, int start_square, int end_square);
+int is_legal_queen_move(t_bb *bb, int start_square, int end_square);
 
 static void add_move(t_move *move_list, int *move_count, int start_square, int end_square)
 {
@@ -18,7 +18,6 @@ static void add_move(t_move *move_list, int *move_count, int start_square, int e
     // Add the move to the list and increment the move count.
     move_list[*move_count].start_index = start_square;
     move_list[*move_count].end_index = end_square;
-    (*move_count)++;
 }
 
 // Function to generate all legal pawn moves using bitboards.
@@ -74,12 +73,12 @@ void generate_legal_pawn_moves(t_bb *bitboards, int *move_count, t_move *valid_m
 
         int direction = is_white ? -8 : 8;
         int starting_rank = is_white ? 6 : 1;
-        int double_step_rank = is_white ? 4 : 2;
-        int promotion_rank = is_white ? 0 : 7;
+        // int double_step_rank = is_white ? 4 : 2;
+        // int promotion_rank = is_white ? 0 : 7;
 
         end_square = start_square + direction;
 		printf("Start square: %d, end_square %d\n", start_square, end_square);
-        if (is_legal_pawn_move(game, start_square, end_square))
+        if (is_legal_pawn_move(bitboards, start_square, end_square))
 		{
             add_move(valid_moves, move_count, start_square, end_square);
         }
@@ -88,7 +87,7 @@ void generate_legal_pawn_moves(t_bb *bitboards, int *move_count, t_move *valid_m
         if ((start_square / 8) == starting_rank)
 		{
             end_square = start_square + (2 * direction);
-            if (is_legal_pawn_move(game, start_square, end_square))
+            if (is_legal_pawn_move(bitboards, start_square, end_square))
 			{
                 add_move(valid_moves, move_count, start_square, end_square);
             }
@@ -99,9 +98,9 @@ void generate_legal_pawn_moves(t_bb *bitboards, int *move_count, t_move *valid_m
 
 void generate_legal_rook_moves(t_bb *bitboards, int *move_count, t_move *valid_moves, int is_white) {
     // Get the bitboard for the rooks of the current player.
-    Bitboard rooks = is_white ? is_white : bitboards->black_rooks;
-    Bitboard own_pieces = is_white ? is_white : bitboards->black_pieces;
-    Bitboard opponents = is_white ? is_white : bitboards->white_pieces;
+    Bitboard rooks = is_white ? bitboards->white_rooks : bitboards->black_rooks;
+    Bitboard own_pieces = is_white ? bitboards->white_pieces : bitboards->black_pieces;
+    Bitboard opponents = is_white ? bitboards->black_pieces : bitboards->white_pieces;
 
     while (rooks) {
         int start_square = __builtin_ctzll(rooks);
@@ -189,12 +188,12 @@ void generate_legal_bishop_moves(t_bb *bitboards, int *move_count, t_move *valid
 
 
 
-int generate_valid_moves(t_bb *bitboards, int is_white, t_move *valid_moves)
+int generate_valid_moves(t_game *game, t_bb bitboards, int is_white, t_move *valid_moves)
 {
     int moves_count = 0;
 	(void) valid_moves;
-
-	valid_moves = malloc(sizeof(t_move) * 400);
+    (void) game;
+	//valid_moves = malloc(sizeof(t_move) * 400);
 	// // generate_legal_pawn_moves(game, &moves_count, valid_moves, is_white);
 	// generate_legal_rook_moves(bitboards, &moves_count, valid_moves, is_white);
 	// // generate_legal_bishop_moves(game, &moves_count, valid_moves, is_white);
@@ -205,13 +204,26 @@ int generate_valid_moves(t_bb *bitboards, int is_white, t_move *valid_moves)
     {
         for (int j = 0; j < 64; j++)
         {
-            if (is_white && get_bit(bitboards->white_pawns, i) == 0)
+            if (is_white && get_bit(bitboards.white_pawns, i) == 0)
                 continue;
-            if (try_to_move(bitboards, i, j, is_white))
+            t_current_ply ply;
+            ply.piece_type = get_status_by_index(i, &bitboards);
+            ply.white_to_play = is_white;
+            ply.move_end = j;
+            ply.move_start = i;
+            ply.target_status = get_status_by_index(j, &bitboards);
+            if (ply.piece_type == EMPTY)
+                continue;
+            if (is_move_legal(&bitboards, i, j, ply, is_white))
             {
                 add_move(valid_moves, &moves_count, i, j);
                 moves_count++;
             }
+            // if (try_to_move(game, &bitboards, i, j, is_white))
+            // {
+            //     add_move(valid_moves, &moves_count, i, j);
+            //     moves_count++;
+            // }
         }
         
     }

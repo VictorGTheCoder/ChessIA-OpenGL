@@ -19,13 +19,13 @@
 # define	KEY_ESCAPE_MACOS 53
 # define KEY_ESCAPE_LINUX 65307
 
-# define EMPTY 0x00000
-# define PAWN 0b00001
-# define BISHOP 0b00010
-# define ROOK 0b00011
-# define QUEEN 0b00100
-# define KNIGHT 0b00101
-# define KING 0b00110
+# define EMPTY 0x00000 // 0
+# define PAWN 0b00001 // WHITE = 17 || BLACK = 9
+# define BISHOP 0b00010 // WHITE = 18 || BLACK = 10
+# define ROOK 0b00011 // WHITE = 19 || BLACK = 11
+# define QUEEN 0b00100 // WHITE = 20 || BLACK = 12
+# define KNIGHT 0b00101 // WHITE = 21 || BLACK = 13
+# define KING 0b00110 // WHITE = 22 || BLACK = 14
 
 # define BLACK 0b01000
 # define WHITE 0b10000
@@ -175,7 +175,7 @@ void	mouse_hook(int button, int state, int x, int y);
 /*int		is_king_in_check(t_gui *gui, int is_white_king);
 int		move_is_valid(t_game *game, int start_square, int end_square);
 int		move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square);*/
-int try_to_move(t_bb *bitboards, int start_square, int end_square, int is_white);
+int try_to_move(t_game *game, t_bb *bitboards, int start_square, int end_square, int is_white);
 int		is_white_piece(t_case *square);
 GLuint	get_pieces_image(t_gui *gui, t_case *square);
 void	deselect_piece(t_gui *gui, t_case *square);
@@ -191,8 +191,8 @@ void move_piece(t_gui *gui, t_case *start_square, t_case *end_square);
 void random_black_move(t_gui *gui);
 void	display_board(void);
 int has_valid_moves(t_gui *gui, int is_white);
-void process_AI(t_game *game);
-int generate_valid_moves(t_bb *bb, int is_white, t_move *valid_moves);
+void process_AI(t_game game);
+int generate_valid_moves(t_game *game, t_bb bb, int is_white, t_move *valid_moves);
 
 
 void initialize_bitboards();

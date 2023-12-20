@@ -110,6 +110,7 @@ int is_legal_bishop_move(t_bb *bitboards, int start_square, int end_square) {
 }
 
 int is_legal_knight_move(t_bb *bb, int start_square, int end_square) {
+    (void) bb;
     int diff_rank = abs((end_square / 8) - (start_square / 8));
     int diff_file = abs((end_square % 8) - (start_square % 8));
     
@@ -134,6 +135,7 @@ int is_legal_queen_move(t_bb *bb, int start_square, int end_square) {
 }
 
 int is_legal_king_move(t_bb *bb, int start_square, int end_square) {
+    (void) bb;
     int diff_rank = abs((end_square / 8) - (start_square / 8));
     int diff_file = abs((end_square % 8) - (start_square % 8));
     
@@ -164,8 +166,8 @@ int is_king_in_check(t_bb bb, int is_white_to_play) {
     king_position = (is_white_to_play == 1) ? bb.white_king : bb.black_king;
     
 
-    printf("King position\n");
-    print_bitboard(king_position);
+    // printf("King position\n");
+    // print_bitboard(king_position);
     // Check if the king is attacked
     if ((is_white_to_play == 1 && (bb.black_attacks & king_position)) || 
         (is_white_to_play == 0 && (bb.white_attacks & king_position))) {
@@ -175,18 +177,19 @@ int is_king_in_check(t_bb bb, int is_white_to_play) {
     return 0; // King is not in check
 }
 
-int is_king_in_check_after_move(t_bb bb, int piece_type, int start_square, int end_square, t_current_ply ply) {
+int is_king_in_check_after_move(int white_to_play, t_bb bb, int piece_type, int start_square, int end_square, t_current_ply ply) {
     // Simulate the move
     // printf("Start_square %d\n", start_square);
     // printf("End_square %d\n", end_square);
+    (void) bb;
     make_move_bitboards(&bb, piece_type, start_square, end_square);
 
-    Bitboard opBoard;
+    // Bitboard opBoard;
 
-    if (game->white_to_play == 1)
-        opBoard = bb.black_pieces;
-    else
-        opBoard = bb.white_pieces;
+    // if (game->white_to_play == 1)
+    //     opBoard = bb.black_pieces;
+    // else
+    //     opBoard = bb.white_pieces;
     
     update_bitboards(&bb);
     int eaten_piece = check_if_a_piece_is_eaten(ply, bb);
@@ -216,14 +219,14 @@ int is_king_in_check_after_move(t_bb bb, int piece_type, int start_square, int e
     // print_bitboard(bb.white_attacks);
     // printf("Black attacks\n");
     // print_bitboard(bb.black_attacks);
-    int in_check = is_king_in_check(bb, game->white_to_play);
+    int in_check = is_king_in_check(bb, white_to_play);
     return in_check;
 }
 
 int is_move_legal(t_bb *bitboards, int start_square, int end_case, t_current_ply ply, int is_white)
 {
 	int result = 0;
-    if (is_king_in_check_after_move(*bitboards, ply.piece_type, start_square, end_case, ply))
+    if (is_king_in_check_after_move(is_white, *bitboards, ply.piece_type, start_square, end_case, ply))
     {
         printf("[ILLEGAL MOVE] King is check\n");
        return (0); // Move puts king in check

@@ -90,13 +90,41 @@ int evaluate_board(t_gui *gui)
     }
 }*/
 
-void process_AI(t_game *game) {
+
+t_bb copy_bitboard(t_bb *bitboards)
+{
+    t_bb new_bitboards;
+    new_bitboards.black_pawns = bitboards->black_pawns;
+    new_bitboards.black_knights = bitboards->black_knights;
+    new_bitboards.black_bishops = bitboards->black_bishops;
+    new_bitboards.black_rooks = bitboards->black_rooks;
+    new_bitboards.black_queens = bitboards->black_queens;
+    new_bitboards.black_king = bitboards->black_king;
+    new_bitboards.black_pieces = bitboards->black_pieces;
+    new_bitboards.black_attacks = bitboards->black_attacks;
+    new_bitboards.white_pawns = bitboards->white_pawns;
+    new_bitboards.white_knights = bitboards->white_knights;
+    new_bitboards.white_bishops = bitboards->white_bishops;
+    new_bitboards.white_rooks = bitboards->white_rooks;
+    new_bitboards.white_queens = bitboards->white_queens;
+    new_bitboards.white_king = bitboards->white_king;
+    new_bitboards.white_pieces = bitboards->white_pieces;
+    new_bitboards.white_attacks = bitboards->white_attacks;
+    return (new_bitboards);
+}
+
+
+void process_AI(t_game game) {
     t_move *valide_moves = malloc(sizeof(t_move) * 1000);
-    int i = generate_valid_moves(game->bitboards, game->white_to_play, valide_moves);
+    int i = generate_valid_moves(&game, *(game.bitboards), game.white_to_play, valide_moves);
     printf("Numbe of valide moves %d\n", i);
     if (i == 0) return;
-    make_move_bitboards(game->bitboards, get_status_by_index(valide_moves[0].start_index, game->bitboards), valide_moves[0].start_index, valide_moves[0].end_index);
-    move_piece(gui, valide_moves[0].start_square, valide_moves[0].end_square);
+    int status = get_status_by_index(valide_moves[0].start_index, game.bitboards);
+    printf("Start index %d\n", valide_moves[0].start_index);
+    printf("End index %d\n", valide_moves[0].end_index);
+    printf("Status %d\n", status);
+    //make_move_bitboards(game->bitboards, status, valide_moves[0].start_index, valide_moves[0].end_index);
+    //move_piece(gui, valide_moves[0].start_square, valide_moves[0].end_square);
     /*t_move valid_moves[64 * 64];
     t_game *temp_game = clone_t_game(game);
     int move_count = generate_valid_moves(temp_game, 0, valid_moves);

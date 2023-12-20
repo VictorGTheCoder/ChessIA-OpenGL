@@ -57,11 +57,19 @@ Bitboard *getBoard(t_bb *bitboards, int piece_type)
             printf("ERROR THERE IS NO MATCHING TYPE\n");
             //exit(EXIT_FAILURE);
     }
+    return bb;
 }
 
 void make_move_bitboards(t_bb *bitboards,  int piece_type, int start_square, int end_square)
 {
+    printf("Current bitboard, %d\n", piece_type);
+
+
     Bitboard *bb = getBoard(bitboards, piece_type);
+    if (!(*bb))
+    {
+        printf("CANNOT MOVE PIECE\n");
+    }
 
     printf("----------getBoard--------\n");
     print_bitboard(*bb);
@@ -164,7 +172,7 @@ void update_attack_bitboards(t_bb *bitboards) {
     bitboards->black_attacks |= generate_piece_attacks(BLACK, KING, bitboards->black_king, bitboards);
 }
 
-void initialize_bitboards() {
+void initialize_bitboards(t_game *game) {
     game->bitboards = malloc(sizeof(t_bb));
     // Pawns
     game->bitboards->black_pawns = 0x000000000000FF00ULL;
@@ -233,14 +241,14 @@ void move_piece_bb(Bitboard *start_board, Bitboard *end_board, int start_index, 
     set_bit(start_board, start_index, 0);
 }
 
-t_game *clone_t_game(t_game *game) {
-    t_game *new_game = malloc(sizeof(t_game));
-    if (!new_game) {
-        // Handle memory allocation error
-        return NULL;
-    }
-    return new_game;
-}
+// t_game *clone_t_game(t_game *game) {
+//     t_game *new_game = malloc(sizeof(t_game));
+//     if (!new_game) {
+//         // Handle memory allocation error
+//         return NULL;
+//     }
+//     return new_game;
+// }
 
 void free_t_game(t_game *game) {
     free(game);

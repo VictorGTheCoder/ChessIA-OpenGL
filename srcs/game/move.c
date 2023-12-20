@@ -3,12 +3,14 @@
 
 void remove_piece(t_case *square, t_gui *gui)
 {
+    (void) gui;
 	square->square_img = 0;
 	square->status = EMPTY;
 }
 
 void deselect_piece(t_gui *gui, t_case *square)
 {
+    (void) square;
 	gui->square_selected = NULL;
     game->is_piece_selected = 0;
 }
@@ -37,7 +39,7 @@ void move_piece(t_gui *gui, t_case *start_square, t_case *end_square)
 	glutPostRedisplay();
 }
 
-void switch_ply()
+void switch_ply(t_game *game)
 {
     if (game->white_to_play == 1)
         game->white_to_play = 0;
@@ -50,8 +52,8 @@ int check_if_a_piece_is_eaten(t_current_ply c_ply, t_bb bb)
 {
     if (c_ply.target_status == EMPTY)
         return (0);
-    printf("Move end\n");
-    print_bitboard(c_ply.move_end);
+    // printf("Move end\n");
+    // print_bitboard(c_ply.move_end);
     if (c_ply.white_to_play)
     {
         if (c_ply.move_end & bb.black_bishops)
@@ -82,10 +84,11 @@ int check_if_a_piece_is_eaten(t_current_ply c_ply, t_bb bb)
         if (c_ply.move_end & bb.white_king)
             return KING | WHITE;
     }
+    return (EMPTY);
 }
 
 
-int try_to_move(t_bb *bitboards, int start_square, int end_square, int is_white)
+int try_to_move(t_game *game, t_bb *bitboards, int start_square, int end_square, int is_white)
 {
     t_current_ply c_ply;
 
@@ -138,7 +141,10 @@ int try_to_move(t_bb *bitboards, int start_square, int end_square, int is_white)
         t_case *end_case = &gui->case_list[end_square];
         move_piece(gui, start_case, end_case);
 
-        switch_ply();
+        switch_ply(game);
+
+
+        //process_AI(*game);
         return (1);
     }
     printf("Illegal move\n");

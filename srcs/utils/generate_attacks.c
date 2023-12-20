@@ -5,7 +5,7 @@
 //           >>9    >>8    >>7
 //               \  |  /
 //   W       >>1 <-  0 -> <<1    E
-//               /  |  \
+//               /  |  L
 //           <<7   <<8    <<9
 //   SW             S          SE
 //   southwest    south   southeast
@@ -56,7 +56,7 @@ uint64_t get_diagonal_attacks(uint64_t position, uint64_t occupied_squares) {
 
 uint64_t get_horizontal_vertical_attacks(uint64_t position, uint64_t occupied_squares) {
     uint64_t attacks = 0;
-    uint64_t sides = 0xFF818181818181FF;
+    //uint64_t sides = 0xFF818181818181FF;
     for (uint64_t pos = 1; pos != 0; pos <<= 1) {
         if ((pos & position) == 0) continue;
         

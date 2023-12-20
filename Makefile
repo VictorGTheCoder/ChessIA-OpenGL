@@ -5,7 +5,7 @@ SRCS = $(addprefix srcs/, main.c gui/board.c gui/gl_init.c utils/board_utils.c u
 
 OBJS = ${SRCS:.c=.o}
 
-CFLAGS = -g
+CFLAGS = -g -Wall -Wextra -Werror
 CC = gcc
 RM = rm -f
 

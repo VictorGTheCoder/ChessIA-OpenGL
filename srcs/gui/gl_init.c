@@ -1,6 +1,5 @@
 #include "../../includes/header.h"
 
-
 static void create_case(t_gui *gui)
 {
 	gui->case_list = malloc(64 * sizeof(t_case));

@@ -23,13 +23,9 @@ void manage_click(int x, int y)
 		{
 			if (gui->square_selected != NULL)
 			{
-				if ((try_to_move(game->bitboards, get_square_from_xy(gui->square_selected->startX, gui->square_selected->startY), square_n, game->white_to_play) == -1))
+				if ((try_to_move(game, game->bitboards, get_square_from_xy(gui->square_selected->startX, gui->square_selected->startY), square_n, game->white_to_play) == 0))
 				{
 					case_selected(gui, square);
-				}
-				else
-				{
-					        process_AI(game);
 				}
 			}
 		}

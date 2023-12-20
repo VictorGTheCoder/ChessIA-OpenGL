@@ -1,8 +1,7 @@
 #include "../includes/header.h"
 
-t_game *game;
 t_gui *gui;
-
+t_game *game;
 void	init_openGL(void)
 {
 	glEnable(GL_TEXTURE_2D);
@@ -26,6 +25,7 @@ void init_squares(t_gui *gui, t_bb *bitboards)
 
 int main(int argc, char *argv[])
 {
+
     gui = malloc(sizeof(t_gui)); 
 
     // print_bitboard(0x00FF000000000000ULL);
