@@ -120,6 +120,7 @@ typedef struct s_current_ply
 typedef struct s_game
 {
 	t_case       *en_passant_target;
+
 	//ALL BOOLEAN
 	int white_to_play;
 
@@ -160,14 +161,14 @@ typedef struct	s_move
 }		t_move;
 
 
-void	init(t_gui *gui);
+void	init();
 void	init_game(void);
-void	init_gui(t_gui *gui);
-void	mlx_create(t_gui *gui);
-void	my_mlx_pixel_put(t_gui *gui, int x, int y, int color);
-void    create_board(t_gui *gui);
+void	init_gui();
+void	mlx_create();
+void	my_mlx_pixel_put(int x, int y, int color);
+void    create_board();
 int 	get_square_from_xy(int x, int y);
-void    case_selected(t_gui *gui, t_case *square);
+void    case_selected(t_case *square);
 
 void	key_hook(unsigned char key, int x, int y);
 void	mouse_hook(int button, int state, int x, int y);
@@ -175,45 +176,50 @@ void	mouse_hook(int button, int state, int x, int y);
 /*int		is_king_in_check(t_gui *gui, int is_white_king);
 int		move_is_valid(t_game *game, int start_square, int end_square);
 int		move_is_conform(t_gui *gui, t_case *start_square, t_case *end_square);*/
-int try_to_move(t_game *game, t_bb *bitboards, int start_square, int end_square, int is_white);
+int 	try_to_move(t_game *game, t_bb *bitboards, int start_square, int end_square, int is_white);
 int		is_white_piece(t_case *square);
-GLuint	get_pieces_image(t_gui *gui, t_case *square);
-void	deselect_piece(t_gui *gui, t_case *square);
-void	load_textures(t_gui *gui);
+GLuint	get_pieces_image(t_case *square);
+void	deselect_piece(t_case *square);
+
+void	load_textures();
 void	draw_chess_piece(GLuint texture, int x, int y, int case_size);
 void	draw_transparent_square(int x, int y, int case_size);
-void	print_board_in_term(t_gui *gui);
-t_gui	*clone_t_gui(t_gui *gui);
-void	draw_pieces_from_case_list(t_gui *gui);
+void	print_board_in_term();
+// t_gui	*clone_t_gui(t_gui *gui);
+void	draw_pieces_from_case_list();
 
-int is_square_attacked(t_gui *gui, t_case *square);
-void move_piece(t_gui *gui, t_case *start_square, t_case *end_square);
-void random_black_move(t_gui *gui);
+int 	is_square_attacked(t_case *square);
+void 	move_piece(t_case *start_square, t_case *end_square);
+void 	random_black_move();
 void	display_board(void);
-int has_valid_moves(t_gui *gui, int is_white);
-void process_AI(t_game game);
-int generate_valid_moves(t_game *game, t_bb bb, int is_white, t_move *valid_moves);
+// int 	has_valid_moves(t_gui *gui, int is_white);
+void 	process_AI(t_game game);
+int 	generate_valid_moves(t_game *game, t_bb bb, int is_white, t_move *valid_moves);
 
 
-void initialize_bitboards();
-int get_bit(Bitboard board, int index);
-void set_bit(Bitboard *board, int index, int value);
-void move_piece_bb(Bitboard *start_board, Bitboard *end_board, int start_index, int end_index);
-void print_bitboard(Bitboard board);
-void print_combined_bitboard(t_bb *bitboards);
+void 	switch_ply(t_game *game);
+
+void 	initialize_bitboards();
+int 	get_bit(Bitboard board, int index);
+void 	set_bit(Bitboard *board, int index, int value);
+void 	move_piece_bb(Bitboard *start_board, Bitboard *end_board, int start_index, int end_index);
+void 	print_bitboard(Bitboard board);
+void 	print_combined_bitboard(t_bb *bitboards);
 t_game *clone_t_game(t_game *game);
-void free_t_game(t_game *game);
-int get_status_by_index(int index, t_bb *bitboards);
+void 	free_t_game(t_game *game);
+int 	get_status_by_index(int index, t_bb *bitboards);
 
 
-int is_move_legal(t_bb *bitboards, int start_square, int end_case, t_current_ply ply, int is_white);
-Bitboard *getBoard(t_bb *bitaboards, int piece_type);
-void update_bitboards(t_bb *bitboards);
-void make_move_bitboards(t_bb *bitboards,  int piece_type, int start_square, int end_square);
+int 		is_move_legal(t_bb *bitboards, int start_square, int end_case, t_current_ply ply, int is_white);
+Bitboard 	*getBoard(t_bb *bitaboards, int piece_type);
+void 		update_bitboards(t_bb *bitboards);
+void 		make_move_bitboards(t_bb *bitboards,  int piece_type, int start_square, int end_square);
 
-uint64_t generate_piece_attacks(int color, int piece_type, uint64_t position, t_bb *bb);
-int check_if_a_piece_is_eaten(t_current_ply ply, t_bb bb);
-void delete_piece_from_bitboard(int index, Bitboard *bb);
+uint64_t 	generate_piece_attacks(int color, int piece_type, uint64_t position, t_bb *bb);
+int 		check_if_a_piece_is_eaten(t_current_ply ply, t_bb bb);
+void 		delete_piece_from_bitboard(int index, Bitboard *bb);
+
+void 		update_gui(t_bb *b);
 
 
 extern t_game *game;

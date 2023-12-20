@@ -1,21 +1,20 @@
 
 #include "../../includes/header.h"
 
-void remove_piece(t_case *square, t_gui *gui)
+void remove_piece(t_case *square)
 {
-    (void) gui;
 	square->square_img = 0;
 	square->status = EMPTY;
 }
 
-void deselect_piece(t_gui *gui, t_case *square)
+void deselect_piece(t_case *square)
 {
     (void) square;
 	gui->square_selected = NULL;
     game->is_piece_selected = 0;
 }
 
-void move_piece(t_gui *gui, t_case *start_square, t_case *end_square)
+void move_piece(t_case *start_square, t_case *end_square)
 {
 	// Vörifier si c'est un coup en passant
 	if (get_square_from_xy(end_square->startX, end_square->startY) == 0)
@@ -34,7 +33,7 @@ void move_piece(t_gui *gui, t_case *start_square, t_case *end_square)
 	end_square->status = start_square->status;
 	start_square->status = EMPTY;
 	end_square->square_img = start_square->square_img;
-	remove_piece(start_square, gui);
+	remove_piece(start_square);
 	gui->square_selected = NULL;
 	glutPostRedisplay();
 }
@@ -45,7 +44,17 @@ void switch_ply(t_game *game)
         game->white_to_play = 0;
     else
         game->white_to_play = 1;
-    printf("\n\n<---------- NEXT ROUND --------> ply\n\n");
+
+    print_combined_bitboard(game->bitboards);
+
+    printf("\n\n<---------- NEXT ROUND -------->\n");
+    if (game->white_to_play == 1)
+        printf("White to play\n");
+    else
+        printf("Black to play\n");
+    
+
+
 }
 
 int check_if_a_piece_is_eaten(t_current_ply c_ply, t_bb bb)
@@ -137,11 +146,8 @@ int try_to_move(t_game *game, t_bb *bitboards, int start_square, int end_square,
         // printf("<-- Attacks  board -->\n");
         // print_bitboard(game->bitboards->white_attacks);
 
-        t_case *start_case = &gui->case_list[start_square];
-        t_case *end_case = &gui->case_list[end_square];
-        move_piece(gui, start_case, end_case);
-
-        switch_ply(game);
+        //update_gui(gui, game->bitboards);
+        
 
 
         //process_AI(*game);

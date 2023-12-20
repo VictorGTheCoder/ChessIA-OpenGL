@@ -10,15 +10,15 @@ void	init_openGL(void)
     gluOrtho2D(0.0, 800.0, 0.0, 800.0);
 }
 
-void init_squares(t_gui *gui, t_bb *bitboards)
+void init_squares(t_bb *bitboards)
 {
-	t_case *square = &gui->case_list[0];
+	t_case *square = &(gui->case_list[0]);
 
     for (int i = 0; i < 64; i++)
     {
         square[i].status = get_status_by_index(i, bitboards);
         //printf("square[%d].status = %d\n", i, square[i].status);
-        square[i].square_img = get_pieces_image(gui, &(square[i]));
+        square[i].square_img = get_pieces_image(&(square[i]));
         //setImage(&(square[i]));
     }
 }
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     // print_bitboard(x);
     printf("INIT\n");
 	init_game();
-	init_gui(gui);
+	init_gui();
     initialize_bitboards(game);
     print_bitboard(game->bitboards->white_pieces);
     printf("---------------\n");
@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
 	glutCreateWindow("CHESS-IA");
 
 	init_openGL();
-	load_textures(gui);
-	init_squares(gui, game->bitboards);
+	load_textures();
+	init_squares(game->bitboards);
 	glutDisplayFunc(display_board);
 	glutMouseFunc(mouse_hook);
 	glutKeyboardFunc(key_hook);

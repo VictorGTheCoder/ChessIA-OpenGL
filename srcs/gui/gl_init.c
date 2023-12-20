@@ -53,11 +53,10 @@ GLuint	load_texture(const char* file)
 
 	SOIL_free_image_data(image);
 
-	//printf("Loaded texture %s with ID %u\n", file, textureID);
 	return textureID;
 }
 
-void	load_textures(t_gui *gui)
+void	load_textures()
 {
 	gui->pieces.white_rook = load_texture("images/white_rook.png");
 	gui->pieces.white_knight = load_texture("images/white_knight.png");
@@ -87,7 +86,7 @@ void	init_game(void)
 	game->en_passant_target = NULL;
 }
 
-void	init_gui(t_gui *gui)
+void	init_gui()
 {
 	gui->case_list = NULL;
 	gui->img = 0;

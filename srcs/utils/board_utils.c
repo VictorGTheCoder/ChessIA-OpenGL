@@ -17,7 +17,7 @@ void draw_transparent_square(int x, int y, int case_size)
     glDisable(GL_BLEND);
 }
 
-GLuint get_pieces_image_selected(t_gui *gui, t_case *square)
+GLuint get_pieces_image_selected(t_case *square)
 {
     switch (square->status) {
         case WHITE | ROOK: return gui->pieces.white_rook_s;
@@ -37,7 +37,7 @@ GLuint get_pieces_image_selected(t_gui *gui, t_case *square)
     }
 }
 
-GLuint get_pieces_image(t_gui *gui, t_case *square)
+GLuint get_pieces_image(t_case *square)
 {
     switch (square->status) {
         case WHITE | ROOK: return gui->pieces.white_rook;
@@ -121,7 +121,7 @@ void draw_highlighted_piece(GLuint texture, int x, int y, int case_size)
 }
 
 
-void case_selected(t_gui *gui, t_case *square)
+void case_selected(t_case *square)
 {
     if (game->is_piece_selected && is_white_piece(square) == game->white_to_play)
     {
@@ -139,7 +139,7 @@ void case_selected(t_gui *gui, t_case *square)
     {
         // Effectuez le mouvement si une pièce est sélectionnée et si la case cliquée est vide ou a une pièce de couleur opposée
         gui->square_selected->square_img = 0; // Enlevez la pièce de la case d'origine
-        square->square_img = get_pieces_image(gui, gui->square_selected); // Placez la pièce sur la nouvelle case
+        square->square_img = get_pieces_image(gui->square_selected); // Placez la pièce sur la nouvelle case
 
         game->is_piece_selected = 0;
         gui->square_selected = NULL;
@@ -151,4 +151,58 @@ void case_selected(t_gui *gui, t_case *square)
 int		get_square_from_xy(int x, int y)
 {
 	return (8 * x / BOARD_SIZE + (8 * y / BOARD_SIZE) * 8);
+}
+
+
+void update_gui(t_bb *b) {
+    for (int x = 0; x < 8; x++) {
+        for (int y = 0; y < 8; y++) {
+            t_case *current_case = &(gui->case_list[y * 8 + x]);
+
+            // Black pieces
+            if (get_bit(b->black_pawns, y * 8 + x)) {
+                current_case->status = PAWN | BLACK;
+                current_case->square_img = get_pieces_image(current_case);
+            } else if (get_bit(b->black_knights, y * 8 + x)) {
+                current_case->status = KNIGHT | BLACK;
+                current_case->square_img = get_pieces_image(current_case);
+            } else if (get_bit(b->black_rooks, y * 8 + x)) {
+                current_case->status = ROOK | BLACK;
+                current_case->square_img = get_pieces_image(current_case);
+            } else if (get_bit(b->black_queens, y * 8 + x)) {
+                current_case->status = QUEEN | BLACK;
+                current_case->square_img = get_pieces_image(current_case);
+            } else if (get_bit(b->black_king, y * 8 + x)) {
+                current_case->status = KING | BLACK;
+                current_case->square_img = get_pieces_image(current_case);
+            } else if (get_bit(b->black_bishops, y * 8 + x)) {
+                current_case->status = BISHOP | BLACK;
+                current_case->square_img = get_pieces_image(current_case);
+
+            // White pieces
+            } else if (get_bit(b->white_pawns, y * 8 + x)) {
+                current_case->status = PAWN | WHITE;
+                current_case->square_img = get_pieces_image(current_case);
+            } else if (get_bit(b->white_knights, y * 8 + x)) {
+                current_case->status = KNIGHT | WHITE;
+                current_case->square_img = get_pieces_image(current_case);
+            } else if (get_bit(b->white_rooks, y * 8 + x)) {
+                current_case->status = ROOK | WHITE;
+                current_case->square_img = get_pieces_image(current_case);
+            } else if (get_bit(b->white_queens, y * 8 + x)) {
+                current_case->status = QUEEN | WHITE;
+                current_case->square_img = get_pieces_image(current_case);
+            } else if (get_bit(b->white_king, y * 8 + x)) {
+                current_case->status = KING | WHITE;
+                current_case->square_img = get_pieces_image(current_case);
+            } else if (get_bit(b->white_bishops, y * 8 + x)) {
+                current_case->status = BISHOP | WHITE;
+                current_case->square_img = get_pieces_image(current_case);
+            } else {
+                current_case->status = EMPTY;
+                current_case->square_img = 0;
+            }
+        }
+    }
+    glutPostRedisplay();
 }

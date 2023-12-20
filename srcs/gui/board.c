@@ -22,7 +22,7 @@ void draw_chess_piece(GLuint texture, int x, int y, int case_size)
 	glDisable(GL_TEXTURE_2D);
 }
 
-void draw_pieces_from_case_list(t_gui *gui)
+void draw_pieces_from_case_list()
 {
     int case_size = BOARD_SIZE / 8;
     for (int i = 0; i < 64; i++)

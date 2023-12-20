@@ -33,7 +33,7 @@ int piece_value(t_case *piece)
 
 
 
-int evaluate_board(t_gui *gui)
+int evaluate_board()
 {
 	int total_score = 0;
 	for (int i = 0; i < 64; i++)

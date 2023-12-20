@@ -57,7 +57,7 @@ int is_square_attacked(t_gui *gui, t_case *square)
 }*/
 
 
-void print_board_in_term(t_gui *gui)
+void print_board_in_term()
 {
 	for (int i = 0; i < 8; i++)
 	{

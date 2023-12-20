@@ -16,8 +16,8 @@ void manage_click(int x, int y)
 		//Si selected piece et la target ont la même couleur
 		if (game->white_to_play == is_white_piece(square))
 		{
-			deselect_piece(gui, gui->square_selected);
-			case_selected(gui, square);
+			deselect_piece(gui->square_selected);
+			case_selected(square);
 		}
 		else
 		{
@@ -25,7 +25,26 @@ void manage_click(int x, int y)
 			{
 				if ((try_to_move(game, game->bitboards, get_square_from_xy(gui->square_selected->startX, gui->square_selected->startY), square_n, game->white_to_play) == 0))
 				{
-					case_selected(gui, square);
+					case_selected(square);
+				}
+				else
+				{
+
+					update_gui(game->bitboards);
+
+					printf("BOARD STATUS\n");
+					for (int i = 0; i < 64; i++)
+					{
+
+						printf("%d ", gui->case_list[i].status);
+						
+						if (i % 8 == 7)
+							printf("\n");
+					}
+					
+					switch_ply(game);
+
+
 				}
 			}
 		}
@@ -34,13 +53,13 @@ void manage_click(int x, int y)
 	{
 		if (square->status != EMPTY)
 		{
-			case_selected(gui, square);
+			case_selected(square);
 			game->is_piece_selected = 1;
 		}
 		else
 		{
 			game->is_piece_selected = 0;
-			deselect_piece(gui, gui->square_selected);
+			deselect_piece(gui->square_selected);
 		}
 	}
 }
