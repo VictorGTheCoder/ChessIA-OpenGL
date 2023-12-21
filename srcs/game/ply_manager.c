@@ -8,12 +8,12 @@ int	check_for_end_game(t_bb *b, t_game *game)
 	free(valid_moves);
 	if (nb_valid_moves == 0)
 	{
-		printf("=====================\n");
-		printf("=                   =\n");
-		printf("=                   =\n");
+		printf("=========================\n");
+		printf("||                      ||\n");
+		printf("||                      ||\n");
 		if (is_king_in_check(*b, game->white_to_play))
 		{
-			if (game->white_to_play)
+			if (!game->white_to_play)
 				printf("= Checkmate, white wins =\n\n");
 			else
 				printf("= Checkmate, black wins =\n\n");
@@ -22,9 +22,9 @@ int	check_for_end_game(t_bb *b, t_game *game)
 		{
 			printf("=  Stalemate, draw  =\n");
 		}
-		printf("=                   =\n");
-		printf("=                   =\n");
-		printf("=====================\n");
+		printf("||                      ||\n");
+		printf("||                      ||\n");
+		printf("=========================\n");
 
 		return (0);
 	}

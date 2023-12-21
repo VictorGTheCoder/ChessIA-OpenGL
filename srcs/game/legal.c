@@ -156,12 +156,6 @@ int is_legal_king_move(t_bb *bb, int start_square, int end_square) {
 int is_king_in_check(t_bb bb, int is_white_to_play) {
     uint64_t king_position;
     
-    if (is_white_to_play == 1)
-    {
-        printf("White is playing\n");
-    }
-    else
-        printf("Black is playing\n");
     // Determine the position of the king
     king_position = (is_white_to_play == 1) ? bb.white_king : bb.black_king;
     
