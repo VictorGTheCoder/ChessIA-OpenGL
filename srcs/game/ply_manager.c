@@ -1,5 +1,38 @@
 #include "../../includes/header.h"
 
+int	check_for_end_game(t_bb *b, t_game *game)
+{
+
+	t_move *valid_moves = malloc(400 * sizeof(t_move));
+	int nb_valid_moves = generate_valid_moves(game, *b, game->white_to_play, valid_moves);
+	free(valid_moves);
+	if (nb_valid_moves == 0)
+	{
+		printf("=====================\n");
+		printf("=                   =\n");
+		printf("=                   =\n");
+		if (is_king_in_check(*b, game->white_to_play))
+		{
+			if (game->white_to_play)
+				printf("= Checkmate, white wins =\n\n");
+			else
+				printf("= Checkmate, black wins =\n\n");
+		}
+		else
+		{
+			printf("=  Stalemate, draw  =\n");
+		}
+		printf("=                   =\n");
+		printf("=                   =\n");
+		printf("=====================\n");
+
+		return (0);
+	}
+	
+	return (1);
+}
+
+
 void manage_click(int x, int y)
 {
 	if (gui->square_selected)
@@ -22,29 +55,21 @@ void manage_click(int x, int y)
 		else
 		{
 			if (gui->square_selected != NULL)
-			{
-				if ((try_to_move(game, game->bitboards, get_square_from_xy(gui->square_selected->startX, gui->square_selected->startY), square_n, game->white_to_play) == 0))
+			{	
+				int rt = try_to_move(game, game->bitboards, get_square_from_xy(gui->square_selected->startX, gui->square_selected->startY), square_n, game->white_to_play);
+				if ((rt == 0))
 				{
-					case_selected(square);
-				}
-				else
-				{
-
-					update_gui(game->bitboards);
-
-					printf("BOARD STATUS\n");
-					for (int i = 0; i < 64; i++)
-					{
-
-						printf("%d ", gui->case_list[i].status);
-						
-						if (i % 8 == 7)
-							printf("\n");
-					}
 					
+				}
+				else if (rt == 1)
+				{
+					update_bitboards(game->bitboards);
+					update_gui(game->bitboards);
 					switch_ply(game);
-
-
+					if (check_for_end_game(game->bitboards, game) == 0)
+					{
+						exit(EXIT_SUCCESS);
+					}
 				}
 			}
 		}

@@ -204,7 +204,9 @@ int generate_valid_moves(t_game *game, t_bb bitboards, int is_white, t_move *val
     {
         for (int j = 0; j < 64; j++)
         {
-            if (is_white && get_bit(bitboards.white_pawns, i) == 0)
+            if (is_white && get_bit(bitboards.white_pieces, i) == 0)
+                continue;
+            if (!is_white && get_bit(bitboards.black_pieces, i) == 0)
                 continue;
             t_current_ply ply;
             ply.piece_type = get_status_by_index(i, &bitboards);
@@ -227,7 +229,11 @@ int generate_valid_moves(t_game *game, t_bb bitboards, int is_white, t_move *val
         }
         
     }
-    printf("Legal moves count [%d]\n", moves_count);
+    printf("Legal moves count [%d]", moves_count);
+    if (game->white_to_play == 1)
+        printf(" for White\n");
+    else
+        printf(" for Black\n");
     //exit(EXIT_FAILURE);
     return (moves_count);
 }

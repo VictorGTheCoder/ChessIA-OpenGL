@@ -197,6 +197,7 @@ void 	process_AI(t_game game);
 int 	generate_valid_moves(t_game *game, t_bb bb, int is_white, t_move *valid_moves);
 
 
+int 	is_king_in_check(t_bb bb, int is_white_to_play);
 void 	switch_ply(t_game *game);
 
 void 	initialize_bitboards();

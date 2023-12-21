@@ -143,7 +143,7 @@ void case_selected(t_case *square)
 
         game->is_piece_selected = 0;
         gui->square_selected = NULL;
-        game->white_to_play = !game->white_to_play; // Changez le joueur actuel
+        // game->white_to_play = !game->white_to_play; // Changez le joueur actuel
     }
     glutPostRedisplay();
 }
@@ -155,53 +155,51 @@ int		get_square_from_xy(int x, int y)
 
 
 void update_gui(t_bb *b) {
-    for (int x = 0; x < 8; x++) {
-        for (int y = 0; y < 8; y++) {
-            t_case *current_case = &(gui->case_list[y * 8 + x]);
+    for (int x = 0; x < 64; x++) {
+        t_case *current_case = &(gui->case_list[x]);
 
-            // Black pieces
-            if (get_bit(b->black_pawns, y * 8 + x)) {
-                current_case->status = PAWN | BLACK;
-                current_case->square_img = get_pieces_image(current_case);
-            } else if (get_bit(b->black_knights, y * 8 + x)) {
-                current_case->status = KNIGHT | BLACK;
-                current_case->square_img = get_pieces_image(current_case);
-            } else if (get_bit(b->black_rooks, y * 8 + x)) {
-                current_case->status = ROOK | BLACK;
-                current_case->square_img = get_pieces_image(current_case);
-            } else if (get_bit(b->black_queens, y * 8 + x)) {
-                current_case->status = QUEEN | BLACK;
-                current_case->square_img = get_pieces_image(current_case);
-            } else if (get_bit(b->black_king, y * 8 + x)) {
-                current_case->status = KING | BLACK;
-                current_case->square_img = get_pieces_image(current_case);
-            } else if (get_bit(b->black_bishops, y * 8 + x)) {
-                current_case->status = BISHOP | BLACK;
-                current_case->square_img = get_pieces_image(current_case);
+        // Black pieces
+        if (get_bit(b->black_pawns, x)) {
+            current_case->status = PAWN | BLACK;
+            current_case->square_img = get_pieces_image(current_case);
+        } else if (get_bit(b->black_knights, x)) {
+            current_case->status = KNIGHT | BLACK;
+            current_case->square_img = get_pieces_image(current_case);
+        } else if (get_bit(b->black_rooks, x)) {
+            current_case->status = ROOK | BLACK;
+            current_case->square_img = get_pieces_image(current_case);
+        } else if (get_bit(b->black_queens, x)) {
+            current_case->status = QUEEN | BLACK;
+            current_case->square_img = get_pieces_image(current_case);
+        } else if (get_bit(b->black_king, x)) {
+            current_case->status = KING | BLACK;
+            current_case->square_img = get_pieces_image(current_case);
+        } else if (get_bit(b->black_bishops, x)) {
+            current_case->status = BISHOP | BLACK;
+            current_case->square_img = get_pieces_image(current_case);
 
-            // White pieces
-            } else if (get_bit(b->white_pawns, y * 8 + x)) {
-                current_case->status = PAWN | WHITE;
-                current_case->square_img = get_pieces_image(current_case);
-            } else if (get_bit(b->white_knights, y * 8 + x)) {
-                current_case->status = KNIGHT | WHITE;
-                current_case->square_img = get_pieces_image(current_case);
-            } else if (get_bit(b->white_rooks, y * 8 + x)) {
-                current_case->status = ROOK | WHITE;
-                current_case->square_img = get_pieces_image(current_case);
-            } else if (get_bit(b->white_queens, y * 8 + x)) {
-                current_case->status = QUEEN | WHITE;
-                current_case->square_img = get_pieces_image(current_case);
-            } else if (get_bit(b->white_king, y * 8 + x)) {
-                current_case->status = KING | WHITE;
-                current_case->square_img = get_pieces_image(current_case);
-            } else if (get_bit(b->white_bishops, y * 8 + x)) {
-                current_case->status = BISHOP | WHITE;
-                current_case->square_img = get_pieces_image(current_case);
-            } else {
-                current_case->status = EMPTY;
-                current_case->square_img = 0;
-            }
+        // White pieces
+        } else if (get_bit(b->white_pawns, x)) {
+            current_case->status = PAWN | WHITE;
+            current_case->square_img = get_pieces_image(current_case);
+        } else if (get_bit(b->white_knights, x)) {
+            current_case->status = KNIGHT | WHITE;
+            current_case->square_img = get_pieces_image(current_case);
+        } else if (get_bit(b->white_rooks, x)) {
+            current_case->status = ROOK | WHITE;
+            current_case->square_img = get_pieces_image(current_case);
+        } else if (get_bit(b->white_queens, x)) {
+            current_case->status = QUEEN | WHITE;
+            current_case->square_img = get_pieces_image(current_case);
+        } else if (get_bit(b->white_king, x)) {
+            current_case->status = KING | WHITE;
+            current_case->square_img = get_pieces_image(current_case);
+        } else if (get_bit(b->white_bishops, x)) {
+            current_case->status = BISHOP | WHITE;
+            current_case->square_img = get_pieces_image(current_case);
+        } else {
+            current_case->status = EMPTY;
+            current_case->square_img = 0;
         }
     }
     glutPostRedisplay();
