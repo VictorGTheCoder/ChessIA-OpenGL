@@ -45,13 +45,13 @@ void switch_ply(t_game *game)
     else
         game->white_to_play = 1;
 
-    print_combined_bitboard(game->bitboards);
+    //print_combined_bitboard(game->bitboards);
 
-    printf("\n\n<---------- NEXT ROUND -------->\n");
-    if (game->white_to_play == 1)
-        printf("White to play\n");
-    else
-        printf("Black to play\n");
+  //printf("\n\n<---------- NEXT ROUND -------->\n");
+    //if (game->white_to_play == 1)
+      //printf("White to play\n");
+    //else
+      //printf("Black to play\n");
     
 
 
@@ -132,7 +132,7 @@ int try_to_move(t_game *game, t_bb *bitboards, int start_square, int end_square,
         make_move_bitboards(game->bitboards, c_ply.piece_type, start_square, end_square);
         // if (check_if_a_piece_is_eaten(c_ply))
         // {
-        //     printf("<--------PIECE EATEN MAIN ------->\n");
+        //   //printf("<--------PIECE EATEN MAIN ------->\n");
             
 
         // }
@@ -153,7 +153,7 @@ int try_to_move(t_game *game, t_bb *bitboards, int start_square, int end_square,
         //process_AI(*game);
         return (1);
     }
-    printf("Illegal move\n");
+  //printf("Illegal move\n");
 
     return 0;
 }

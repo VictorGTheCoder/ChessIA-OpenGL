@@ -161,6 +161,13 @@ typedef struct	s_move
 }		t_move;
 
 
+typedef struct s_payload
+{
+	int eval;
+	t_move move;
+} t_payload;
+
+
 void	init();
 void	init_game(void);
 void	init_gui();
@@ -194,13 +201,13 @@ void 	random_black_move();
 void	display_board(void);
 // int 	has_valid_moves(t_gui *gui, int is_white);
 void 	process_AI(t_game game);
-int 	generate_valid_moves(t_game *game, t_bb bb, int is_white, t_move *valid_moves);
+int 	generate_valid_moves(t_game game, t_bb bb, int is_white, t_move *valid_moves);
 
 
 int 	is_king_in_check(t_bb bb, int is_white_to_play);
 void 	switch_ply(t_game *game);
 
-void 	initialize_bitboards();
+void 	initialize_bitboards(t_game *game);
 int 	get_bit(Bitboard board, int index);
 void 	set_bit(Bitboard *board, int index, int value);
 void 	move_piece_bb(Bitboard *start_board, Bitboard *end_board, int start_index, int end_index);

@@ -188,10 +188,9 @@ void generate_legal_bishop_moves(t_bb *bitboards, int *move_count, t_move *valid
 
 
 
-int generate_valid_moves(t_game *game, t_bb bitboards, int is_white, t_move *valid_moves)
+int generate_valid_moves(t_game game, t_bb bitboards, int is_white, t_move *valid_moves)
 {
     int moves_count = 0;
-	(void) valid_moves;
     (void) game;
 	//valid_moves = malloc(sizeof(t_move) * 400);
 	// // generate_legal_pawn_moves(game, &moves_count, valid_moves, is_white);
@@ -214,6 +213,9 @@ int generate_valid_moves(t_game *game, t_bb bitboards, int is_white, t_move *val
             ply.move_end = j;
             ply.move_start = i;
             ply.target_status = get_status_by_index(j, &bitboards);
+
+            if ((ply.piece_type & 0b11000) == (ply.target_status & 0b11000))
+                continue;
             if (ply.piece_type == EMPTY)
                 continue;
             if (is_move_legal(&bitboards, i, j, ply, is_white))
@@ -229,11 +231,11 @@ int generate_valid_moves(t_game *game, t_bb bitboards, int is_white, t_move *val
         }
         
     }
-    printf("Legal moves count [%d]", moves_count);
-    if (game->white_to_play == 1)
-        printf(" for White\n");
-    else
-        printf(" for Black\n");
+  //printf("Legal moves count [%d]", moves_count);
+   // if (game.white_to_play == 1)
+      //printf(" for White\n");
+   // else
+      //printf(" for Black\n");
     //exit(EXIT_FAILURE);
     return (moves_count);
 }

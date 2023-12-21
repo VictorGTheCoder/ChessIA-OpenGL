@@ -1,8 +1,8 @@
 #include "../../includes/header.h"
 
-int piece_value(t_case *piece)
+int get_piece_value(int status)
 {
-	switch (piece->status)
+	switch (status)
 	{
 		case WHITE | PAWN:
 			return 1;
@@ -33,62 +33,84 @@ int piece_value(t_case *piece)
 
 
 
-int evaluate_board()
+int evaluate_board(t_bb bitboards)
 {
 	int total_score = 0;
 	for (int i = 0; i < 64; i++)
 	{
-		total_score += piece_value(&gui->case_list[i]);
+		if (get_bit(bitboards.black_pieces | bitboards.white_pieces, i) == 1)
+        {
+            total_score += get_piece_value(get_status_by_index(i, &bitboards));
+        }
 	}
 	return (total_score);
 }
 
-/*int minimax(t_game *game, int depth, int alpha, int beta, int maximizing_player)
+t_payload minimax(t_game game, t_bb bitboards, int depth, int alpha, int beta, int maximizing_player)
 {
-    if (depth == 0 || has_valid_moves(gui, maximizing_player) == 0)
+    t_move bestMove;
+    bestMove.end_index = 0;
+    if (depth == 0)
     {
-        return evaluate_board(gui);
+        return (t_payload){evaluate_board(bitboards), bestMove};
     }
 
-    t_move valid_moves[64 * 64];
+    t_move valid_moves[1000];
     int move_count;
-    generate_valid_moves(game, maximizing_player, valid_moves, &move_count);
+
+
+
+    move_count = generate_valid_moves(game, *game.bitboards, maximizing_player, valid_moves);
 
     if (maximizing_player)
     {
         int max_eval = INT_MIN;
         for (int i = 0; i < move_count; i++)
         {
-            t_gui *temp_gui = clone_t_gui(gui);
-            move_piece(temp_gui, valid_moves[i].start_square, valid_moves[i].end_square);
-            int eval = minimax(temp_gui, depth - 1, alpha, beta, 0);
-            max_eval = (int)fmax(max_eval, eval);
+            int status = get_status_by_index(valid_moves[i].start_index, &bitboards);
+            make_move_bitboards(&bitboards, status, valid_moves[i].start_index, valid_moves[i].end_index);
+            t_payload p = minimax(game, bitboards, depth - 1, alpha, beta, !maximizing_player);
+            //make_move_bitboards(&bitboards, status, valid_moves[i].end_index, valid_moves[i].start_index);
+
+            int eval = p.eval;
             alpha = (int)fmax(alpha, eval);
-            if (beta <= alpha)
+
+            if (max_eval < eval)
             {
-                break;
+                max_eval = eval;
+                bestMove = valid_moves[i];
             }
+
+            if (beta <= alpha)
+                break;
         }
-        return max_eval;
+        printf("Actual Best Move for White: %d || From %d to %d\n", max_eval, bestMove.start_index, bestMove.end_index);
+
+        return (t_payload){max_eval, bestMove};
     }
     else
     {
         int min_eval = INT_MAX;
         for (int i = 0; i < move_count; i++)
         {
-            t_gui *temp_gui = clone_t_gui(gui);
-            move_piece(temp_gui, valid_moves[i].start_square, valid_moves[i].end_square);
-            int eval = minimax(temp_gui, depth - 1, alpha, beta, 1);
-            min_eval = fmin(min_eval, eval);
+            int status = get_status_by_index(valid_moves[i].start_index, &bitboards);
+            make_move_bitboards(&bitboards, status, valid_moves[i].start_index, valid_moves[i].end_index);    
+            t_payload p = minimax(game, bitboards, depth - 1, alpha, beta, !maximizing_player);
+            //make_move_bitboards(&bitboards, status, valid_moves[i].end_index, valid_moves[i].start_index);
+            int eval = p.eval;
             beta = fmin(beta, eval);
-            if (beta <= alpha)
+            if (min_eval > eval)
             {
-                break;
+                min_eval = eval;
+                bestMove = valid_moves[i];
             }
+            if (beta <= alpha)
+                break;
         }
-        return min_eval;
+        printf("Actual Best Move for black: %d || From %d to %d\n", min_eval, bestMove.start_index, bestMove.end_index);
+        return (t_payload){min_eval, bestMove};
     }
-}*/
+}
 
 
 t_bb copy_bitboard(t_bb *bitboards)
@@ -115,42 +137,25 @@ t_bb copy_bitboard(t_bb *bitboards)
 
 
 void process_AI(t_game game) {
+    printf("Evaluating... %d\n", evaluate_board(*game.bitboards));
     t_move *valide_moves = malloc(sizeof(t_move) * 1000);
-    int i = generate_valid_moves(&game, *(game.bitboards), game.white_to_play, valide_moves);
-    printf("Numbe of valide moves %d\n", i);
-    if (i == 0) return;
-    int status = get_status_by_index(valide_moves[0].start_index, game.bitboards);
-    printf("Start index %d\n", valide_moves[0].start_index);
-    printf("End index %d\n", valide_moves[0].end_index);
-    printf("Status %d\n", status);
-    //make_move_bitboards(game->bitboards, status, valide_moves[0].start_index, valide_moves[0].end_index);
-    //move_piece(gui, valide_moves[0].start_square, valide_moves[0].end_square);
-    /*t_move valid_moves[64 * 64];
-    t_game *temp_game = clone_t_game(game);
-    int move_count = generate_valid_moves(temp_game, 0, valid_moves);
+    generate_valid_moves(game, *(game.bitboards), game.white_to_play, valide_moves);
 
-    if (move_count == 0) {
-        printf("No valid moves, game over\n");
-        return;
-    }
 
-    int max_eval = INT_MIN;
-    t_move best_move;
 
-    for (int i = 0; i < move_count; i++) {
-        temp_game = clone_t_game(game); // Clone the game state including bitboards
-        apply_move_to_bitboards(temp_game->bitboards, valid_moves[i].start_index, valid_moves[i].end_index);
-        int eval = minimax(temp_game, 1, INT_MIN, INT_MAX, 1); // Adjust depth as necessary
-        if (eval > max_eval) {
-            max_eval = eval;
-            best_move = valid_moves[i];
-        }
-        free_t_game(temp_game); // Clean up the cloned game state
-    }
-    printf("Move piece from %d to %d\n", best_move.start_index, best_move.end_index);
+    t_payload p = minimax(game, *game.bitboards ,2, INT_MIN, INT_MAX, game.white_to_play);
+    t_move best_move = p.move;
 
-    // Apply the best move found to the original game state
-    apply_move_to_bitboards(game->bitboards, best_move.start_index, best_move.end_index);*/
+
+    //printf("Eval: %d\n", p.eval);
+
+    
+    int status = get_status_by_index(best_move.start_index, game.bitboards);
+    make_move_bitboards(game.bitboards, status, best_move.start_index, best_move.end_index);
+
+    free(valide_moves);
+    update_bitboards(game.bitboards);
+    update_gui(game.bitboards);
 }
 
 

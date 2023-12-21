@@ -35,12 +35,12 @@ int main(int argc, char *argv[])
     // x = x << 9;
     // printf("--------\n");
     // print_bitboard(x);
-    printf("INIT\n");
+  //printf("INIT\n");
 	init_game();
 	init_gui();
-    initialize_bitboards(game);
-    print_bitboard(game->bitboards->white_pieces);
-    printf("---------------\n");
+  initialize_bitboards(game);
+    //print_bitboard(game->bitboards->white_pieces);
+  //printf("---------------\n");
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
@@ -58,6 +58,6 @@ int main(int argc, char *argv[])
     glutMainLoop();
     free(gui);
 	free(gui->case_list);
-    printf("FINISH\n");
+  //printf("FINISH\n");
     return 0;
 }

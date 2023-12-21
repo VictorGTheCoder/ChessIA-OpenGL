@@ -4,7 +4,7 @@ int	check_for_end_game(t_bb *b, t_game *game)
 {
 
 	t_move *valid_moves = malloc(400 * sizeof(t_move));
-	int nb_valid_moves = generate_valid_moves(game, *b, game->white_to_play, valid_moves);
+	int nb_valid_moves = generate_valid_moves(*game, *b, game->white_to_play, valid_moves);
 	free(valid_moves);
 	if (nb_valid_moves == 0)
 	{
@@ -14,13 +14,13 @@ int	check_for_end_game(t_bb *b, t_game *game)
 		if (is_king_in_check(*b, game->white_to_play))
 		{
 			if (!game->white_to_play)
-				printf("= Checkmate, white wins =\n\n");
+				printf("|| Checkmate, white wins ||\n\n");
 			else
-				printf("= Checkmate, black wins =\n\n");
+				printf("|| Checkmate, black wins ||\n\n");
 		}
 		else
 		{
-			printf("=  Stalemate, draw  =\n");
+			printf("||  Stalemate, draw  ||\n");
 		}
 		printf("||                      ||\n");
 		printf("||                      ||\n");
@@ -70,6 +70,8 @@ void manage_click(int x, int y)
 					{
 						exit(EXIT_SUCCESS);
 					}
+					process_AI(*game);
+					switch_ply(game);
 				}
 			}
 		}

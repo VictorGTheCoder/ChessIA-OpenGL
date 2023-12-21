@@ -7,7 +7,7 @@ int is_legal_pawn_move(t_bb *bitboards, int start_square, int end_square, int is
     int end_file = end_square % 8;
     
 
-    printf("Start (%d, %d) end (%d, %d)\n", start_rank, start_file, end_rank, end_file);
+  //printf("Start (%d, %d) end (%d, %d)\n", start_rank, start_file, end_rank, end_file);
     uint64_t mask = 1ULL << end_square;
     
     if (is_white) {
@@ -29,7 +29,7 @@ int is_legal_pawn_move(t_bb *bitboards, int start_square, int end_square, int is
             return 1;
         }
     }
-    printf("Illegal move\n");
+  //printf("Illegal move\n");
     return 0; // Illegal move
 }
 
@@ -41,7 +41,7 @@ int is_legal_rook_move(t_bb *bitboards, int start_square, int end_square) {
     
     // If not in the same rank and not in the same file, it's an illegal move
     if (start_rank != end_rank && start_file != end_file) {
-        printf("Not the same rank or file\n");
+      //printf("Not the same rank or file\n");
         return 0;
     }
 
@@ -53,7 +53,7 @@ int is_legal_rook_move(t_bb *bitboards, int start_square, int end_square) {
         for (int file = start_file + step; file != end_file; file += step) {
             mask = 1ULL << (start_rank * 8 + file);
             if (bitboards->white_pieces & mask || bitboards->black_pieces & mask) {
-                printf("Path is blocked 1\n");
+              //printf("Path is blocked 1\n");
                 return 0; // Path is blocked
             }
         }
@@ -62,7 +62,7 @@ int is_legal_rook_move(t_bb *bitboards, int start_square, int end_square) {
         for (int square = start_square + step; square != end_square; square += step) {
             mask = 1ULL << square;
             if (bitboards->white_pieces & mask || bitboards->black_pieces & mask) {
-                printf("Path is blocked 2\n");
+              //printf("Path is blocked 2\n");
                 return 0; // Path is blocked
             }
         }
@@ -72,7 +72,7 @@ int is_legal_rook_move(t_bb *bitboards, int start_square, int end_square) {
     // mask = 1ULL << end_square;
     // if ((game->bitboards->white_pieces & mask && is_white) ||
     //     (game->bitboards->black_pieces & mask && !is_white)) {
-    //     printf("Destination Error\n");
+    //   //printf("Destination Error\n");
     //     return 0;
     // }
 
@@ -90,7 +90,7 @@ int is_legal_bishop_move(t_bb *bitboards, int start_square, int end_square) {
     int rank_step = (end_square / 8 > start_square / 8) ? 8 : -8;
     int file_step = (end_square % 8 > start_square % 8) ? 1 : -1;
     int step = rank_step + file_step;
-    printf("Start %d end %d\n", start_square, end_square);
+  //printf("Start %d end %d\n", start_square, end_square);
     
     for (int square = start_square + step; square != end_square; square += step) {
         uint64_t mask = 1ULL << square;
@@ -189,14 +189,14 @@ int is_king_in_check_after_move(int white_to_play, t_bb bb, int piece_type, int 
     int eaten_piece = check_if_a_piece_is_eaten(ply, bb);
     if (eaten_piece != EMPTY)
     {
-        printf("<--------PIECE EATEN ------->\n");
+      //printf("<--------PIECE EATEN ------->\n");
         delete_piece_from_bitboard(end_square, getBoard(&bb, eaten_piece));
         update_bitboards(&bb);
 
     }
     else
     {
-        printf("<--------NO PIECE EATEN ------->\n");
+      //printf("<--------NO PIECE EATEN ------->\n");
 
     }
 
@@ -222,7 +222,7 @@ int is_move_legal(t_bb *bitboards, int start_square, int end_case, t_current_ply
 	int result = 0;
     if (is_king_in_check_after_move(is_white, *bitboards, ply.piece_type, start_square, end_case, ply))
     {
-        printf("[ILLEGAL MOVE] King is check\n");
+      //printf("[ILLEGAL MOVE] King is check\n");
        return (0); // Move puts king in check
     } 
     

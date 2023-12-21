@@ -54,7 +54,8 @@ Bitboard *getBoard(t_bb *bitboards, int piece_type)
             bb = &bitboards->black_knights;
             break;
         default:
-            printf("ERROR THERE IS NO MATCHING TYPE\n");
+            bb = NULL;
+            // printf("ERROR THERE IS NO MATCHING TYPE\n");
             //exit(EXIT_FAILURE);
     }
     return bb;
@@ -62,39 +63,31 @@ Bitboard *getBoard(t_bb *bitboards, int piece_type)
 
 void make_move_bitboards(t_bb *bitboards,  int piece_type, int start_square, int end_square)
 {
-    printf("Current bitboard, %d\n", piece_type);
-
-
-    Bitboard *bb = getBoard(bitboards, piece_type);
-    if (!(*bb))
+    // CheckForPromotion
+    if ((piece_type & COLOR_MASK) == PAWN)
     {
-        printf("CANNOT MOVE PIECE\n");
+        if (end_square / 8 == 0)
+        {
+            delete_piece_from_bitboard(start_square, getBoard(bitboards, piece_type));
+            piece_type = QUEEN | WHITE; // Promotion to white queen
+        }
+        else if (end_square / 8 == 7)
+        {
+            delete_piece_from_bitboard(start_square, getBoard(bitboards, piece_type));
+            piece_type = QUEEN | BLACK; // Promotion to black queen
+        }
     }
 
-    printf("----------getBoard--------\n");
-    print_bitboard(*bb);
-    printf("Piece type: %d\n", piece_type);
-    printf("Start square: %d\n", start_square);
-    printf("End square: %d\n", end_square);
-    // if (!piece_type || !start_square || !end_square)
-    // {
-    //     printf("ERROR IN MAKE MOVE BITBOARDS\n");
-    //     exit(EXIT_FAILURE);
-    // }
-    // if (piece_type == PAWN | BLACK)
-    // {
-    //     if (end_square / 8 == 0)
-    //     {
-    //         piece_type = QUEEN | BLACK;
-    //     }
-    // }
-    // else if (piece_type == PAWN | WHITE)
-    // {
-    //     if (end_square / 8 == 7)
-    //     {
-    //         piece_type = QUEEN | WHITE;
-    //     }
-    // }
+    Bitboard *bb = getBoard(bitboards, piece_type);
+    if (bb == NULL)
+        return ;
+
+    int target_status = get_status_by_index(end_square, bitboards);
+    Bitboard *tbb = getBoard(bitboards, target_status);
+    if (tbb != NULL)
+        delete_piece_from_bitboard(end_square, tbb);
+
+
     uint64_t start_mask = 1ULL << (start_square);
     uint64_t end_mask = 1ULL << (end_square);
 
@@ -176,7 +169,7 @@ void initialize_bitboards(t_game *game) {
     game->bitboards = malloc(sizeof(t_bb));
     // Pawns
     game->bitboards->black_pawns = 0x000000000000FF00ULL;
-    game->bitboards->white_pawns = 0x0000000000000000ULL;
+    game->bitboards->white_pawns = 0x00FF000000000000ULL;
 
     // Knights
     game->bitboards->black_knights = 0x0000000000000042ULL;
@@ -240,15 +233,6 @@ void move_piece_bb(Bitboard *start_board, Bitboard *end_board, int start_index, 
     set_bit(end_board, end_index, 1);
     set_bit(start_board, start_index, 0);
 }
-
-// t_game *clone_t_game(t_game *game) {
-//     t_game *new_game = malloc(sizeof(t_game));
-//     if (!new_game) {
-//         // Handle memory allocation error
-//         return NULL;
-//     }
-//     return new_game;
-// }
 
 void free_t_game(t_game *game) {
     free(game);
