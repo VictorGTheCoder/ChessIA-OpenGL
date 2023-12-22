@@ -172,47 +172,15 @@ int is_king_in_check(t_bb bb, int is_white_to_play) {
 }
 
 int is_king_in_check_after_move(int white_to_play, t_bb bb, int piece_type, int start_square, int end_square, t_current_ply ply) {
-    // Simulate the move
-    // printf("Start_square %d\n", start_square);
-    // printf("End_square %d\n", end_square);
-    (void) bb;
+
     make_move_bitboards(&bb, piece_type, start_square, end_square);
 
-    // Bitboard opBoard;
-
-    // if (game->white_to_play == 1)
-    //     opBoard = bb.black_pieces;
-    // else
-    //     opBoard = bb.white_pieces;
-    
-    update_bitboards(&bb);
     int eaten_piece = check_if_a_piece_is_eaten(ply, bb);
     if (eaten_piece != EMPTY)
     {
-      //printf("<--------PIECE EATEN ------->\n");
         delete_piece_from_bitboard(end_square, getBoard(&bb, eaten_piece));
         update_bitboards(&bb);
-
     }
-    else
-    {
-      //printf("<--------NO PIECE EATEN ------->\n");
-
-    }
-
-    // printf("Oponent Bitboard after move\n");
-    // print_bitboard(opBoard);
-    // //print_bitboard(bb->white_attacks);
-
-    // printf("Bitboard after move\n");
-    // print_bitboard(bb.black_pieces);
-    // printf("--------------------\n");
-    // print_bitboard(bb.white_pieces);
-
-    // printf("White attacks\n");
-    // print_bitboard(bb.white_attacks);
-    // printf("Black attacks\n");
-    // print_bitboard(bb.black_attacks);
     int in_check = is_king_in_check(bb, white_to_play);
     return in_check;
 }

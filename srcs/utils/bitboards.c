@@ -93,6 +93,7 @@ void make_move_bitboards(t_bb *bitboards,  int piece_type, int start_square, int
 
     *bb &= ~start_mask; // Clear the bit at the start square
     *bb |= end_mask;    // Set the bit at the end square
+    update_bitboards(bitboards);  
 }
 
 void update_bitboards(t_bb *bitboards)

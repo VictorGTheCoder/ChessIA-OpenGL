@@ -128,6 +128,7 @@ int try_to_move(t_game *game, t_bb *bitboards, int start_square, int end_square,
         if (c_ply.target_status != EMPTY)
         {
             delete_piece_from_bitboard(end_square, getBoard(game->bitboards, c_ply.target_status));
+            update_bitboards(game->bitboards);
         }
         make_move_bitboards(game->bitboards, c_ply.piece_type, start_square, end_square);
         // if (check_if_a_piece_is_eaten(c_ply))
