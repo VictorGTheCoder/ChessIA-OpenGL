@@ -6,13 +6,17 @@ int is_legal_pawn_move(t_bb *bitboards, int start_square, int end_square, int is
     int end_rank = 7 - end_square / 8;
     int end_file = end_square % 8;
     
-
-  //printf("Start (%d, %d) end (%d, %d)\n", start_rank, start_file, end_rank, end_file);
     uint64_t mask = 1ULL << end_square;
+    uint64_t mask2;
     
     if (is_white) {
+        if (end_rank == start_rank + 2) {
+            mask2 = 1ULL << (end_square + 8);
+        } else {
+            mask2 = 0ULL;
+        }
         if (end_file == start_file) {
-            if ((start_rank == 1 && end_rank == start_rank + 2 && !(bitboards->black_pieces & mask)) || // Double step from starting position
+            if ((start_rank == 1 && end_rank == start_rank + 2 && !(bitboards->black_pieces & mask) && !((bitboards->black_pieces | bitboards->white_pieces) & mask2)) || // Double step from starting position
                 (end_rank == start_rank + 1 && !(bitboards->black_pieces & mask))) { // Single step
                 return 1;
             }
@@ -20,8 +24,13 @@ int is_legal_pawn_move(t_bb *bitboards, int start_square, int end_square, int is
             return 1;
         }
     } else {
+        if (end_rank == start_rank - 2) {
+            mask2 = 1ULL << (end_square - 8);
+        } else {
+            mask2 = 0ULL;
+        }
         if (end_file == start_file) {
-            if ((start_rank == 6 && end_rank == start_rank - 2 && !(bitboards->white_pieces & mask)) || // Double step from starting position
+            if ((start_rank == 6 && end_rank == start_rank - 2 && !(bitboards->white_pieces & mask) && !((bitboards->black_pieces | bitboards->white_pieces) & mask2)) || // Double step from starting position
                 (end_rank == start_rank - 1 && !(bitboards->white_pieces & mask))) { // Single step
                 return 1;
             }
@@ -29,7 +38,6 @@ int is_legal_pawn_move(t_bb *bitboards, int start_square, int end_square, int is
             return 1;
         }
     }
-  //printf("Illegal move\n");
     return 0; // Illegal move
 }
 

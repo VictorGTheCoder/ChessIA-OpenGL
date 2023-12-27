@@ -1,5 +1,8 @@
 #include "../../includes/header.h"
 
+
+clock_t total;
+
 int get_piece_value(int status)
 {
 	switch (status)
@@ -119,18 +122,22 @@ t_payload Search (t_game game, t_bb bitboards, int depth, int alpha, int beta, i
     bestMove.start_index = 0;
     bestMove.end_index = 0;
 
+	EvaluatedPositions++;
+
     if (depth == 0)
-        return (t_payload){evaluate_board(bitboards), bestMove};
+        return QuiescenceSearch(game, bitboards, alpha, beta, maximizing_player);
+        //return (t_payload){evaluate_board(bitboards), bestMove};
     
 
+    clock_t start = clock();
     moveCount = generate_valid_moves(game, bitboards, maximizing_player, valid_moves, 0);
-
+    clock_t end = clock();
+    total += (end - start);
 
     if (maximizing_player)
     {
         for (int i = 0; i < moveCount; i++)
         {
-			EvaluatedPositions++;
             int status = get_status_by_index(valid_moves[i].start_index, &bitboards);
             make_move_bitboards(&bitboards, status, valid_moves[i].start_index, valid_moves[i].end_index);
             t_payload p = Search(game, bitboards, depth - 1, alpha, beta, !maximizing_player);
@@ -141,6 +148,8 @@ t_payload Search (t_game game, t_bb bitboards, int depth, int alpha, int beta, i
                 bestMove = valid_moves[i];
 
             alpha = (int)fmax(alpha, eval);
+            if (beta <= alpha)
+                break;
         }
         return (t_payload){alpha, bestMove};
     }
@@ -148,7 +157,6 @@ t_payload Search (t_game game, t_bb bitboards, int depth, int alpha, int beta, i
     {
         for (int i = 0; i < moveCount; i++)
         {
-			EvaluatedPositions++;
             int status = get_status_by_index(valid_moves[i].start_index, &bitboards);
             make_move_bitboards(&bitboards, status, valid_moves[i].start_index, valid_moves[i].end_index);
             t_payload p = Search(game, bitboards, depth - 1, alpha, beta, !maximizing_player);
@@ -159,25 +167,32 @@ t_payload Search (t_game game, t_bb bitboards, int depth, int alpha, int beta, i
                 bestMove = valid_moves[i];
 
             beta = (int) fmin(beta, eval);
-            // if (beta <= alpha)
-            //     break;
+            if (beta <= alpha)
+                break;
         }
         return (t_payload){beta, bestMove};
     }
 }
 
-void process_AI(t_game game) { 
+void process_AI(t_game game) {
+
     printf("Evaluating... %d\n", evaluate_board(*game.bitboards));
 	
-    // t_move *valide_moves = malloc(sizeof(t_move) * 1000);
-    // generate_valid_moves(game, *(game.bitboards), game.white_to_play, valide_moves, 0);
 
-
-
-    //t_payload p = minimax(game, *game.bitboards , 1, INT_MIN, INT_MAX, game.white_to_play);
+    total = 0;
+    delta2 = 0;
 	EvaluatedPositions = 0;
-    t_payload p = Search(game, *game.bitboards , 3, INT_MIN, INT_MAX, game.white_to_play);
-	printf("Evaluated %d positions\n", EvaluatedPositions);
+    
+    clock_t start = clock();
+    t_payload p = Search(game, *game.bitboards , 2, INT_MIN, INT_MAX, game.white_to_play);
+	clock_t end = clock();
+    printf("Time taken: %fs\n", (double)(end - start) / CLOCKS_PER_SEC);
+    printf("Time taken: %fs\n", (double)(total) / CLOCKS_PER_SEC);
+    printf("Time taken: %fs\n", (double)(delta2) / CLOCKS_PER_SEC);
+    
+    
+    printf("Evaluated %d positions\n", EvaluatedPositions);
+    
     t_move best_move = p.move;
     int eval = p.eval;
 
@@ -190,7 +205,6 @@ void process_AI(t_game game) {
     int status = get_status_by_index(best_move.start_index, game.bitboards);
     make_move_bitboards(game.bitboards, status, best_move.start_index, best_move.end_index);
 
-    //free(valide_moves);
     update_gui(game.bitboards);
 }
 

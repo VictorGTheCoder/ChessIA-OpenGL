@@ -12,6 +12,8 @@
 # include <time.h>
 #include <limits.h>
 #include <math.h>
+#include <time.h>
+
 
 # define BLACK_COLOR 0x8B5A2B
 # define WHITE_COLOR 0xF5DEB3
@@ -31,6 +33,8 @@
 # define WHITE 0b10000
 
 #define COLOR_MASK 0b00111
+
+
 
 typedef struct s_pieces
 {
@@ -232,5 +236,5 @@ void 		update_gui(t_bb *b);
 
 extern t_game *game;
 extern t_gui *gui;
-
+extern clock_t delta2;
 #endif
