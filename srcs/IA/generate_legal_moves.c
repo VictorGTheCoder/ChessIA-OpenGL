@@ -188,7 +188,7 @@ void generate_legal_bishop_moves(t_bb *bitboards, int *move_count, t_move *valid
 
 
 
-int generate_valid_moves(t_game game, t_bb bitboards, int is_white, t_move *valid_moves)
+int generate_valid_moves(t_game game, t_bb bitboards, int is_white, t_move *valid_moves, int only_attacks)
 {
     int moves_count = 0;
     (void) game;
@@ -198,7 +198,6 @@ int generate_valid_moves(t_game game, t_bb bitboards, int is_white, t_move *vali
 	// // generate_legal_bishop_moves(game, &moves_count, valid_moves, is_white);
 	
 	// printf("Number of legal bishop moves: %d\n", moves_count);
-
     for (int i = 0; i < 64; i++)
     {
         for (int j = 0; j < 64; j++)
@@ -220,8 +219,24 @@ int generate_valid_moves(t_game game, t_bb bitboards, int is_white, t_move *vali
                 continue;
             if (is_move_legal(&bitboards, i, j, ply, is_white))
             {
-                add_move(valid_moves, &moves_count, i, j);
-                moves_count++;
+				if (only_attacks == 1)
+				{
+					if ((get_status_by_index(j, &bitboards) & 0b11000) == BLACK && is_white)
+					{
+				      	add_move(valid_moves, &moves_count, i, j);
+	            	    moves_count++;
+					}
+					else if ((get_status_by_index(j, &bitboards) & 0b11000) == WHITE && !is_white)
+					{
+					  	add_move(valid_moves, &moves_count, i, j);
+	            	    moves_count++;
+					}
+				}
+				else
+				{
+                	add_move(valid_moves, &moves_count, i, j);
+	                moves_count++;
+				}
             }
             // if (try_to_move(game, &bitboards, i, j, is_white))
             // {

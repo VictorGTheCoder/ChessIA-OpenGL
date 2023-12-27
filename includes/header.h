@@ -201,7 +201,7 @@ void 	random_black_move();
 void	display_board(void);
 // int 	has_valid_moves(t_gui *gui, int is_white);
 void 	process_AI(t_game game);
-int 	generate_valid_moves(t_game game, t_bb bb, int is_white, t_move *valid_moves);
+int 	generate_valid_moves(t_game game, t_bb bb, int is_white, t_move *valid_moves, int only_attacks);
 
 
 int 	is_king_in_check(t_bb bb, int is_white_to_play);

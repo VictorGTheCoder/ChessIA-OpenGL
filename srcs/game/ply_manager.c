@@ -4,7 +4,7 @@ int	check_for_end_game(t_bb *b, t_game *game)
 {
 
 	t_move *valid_moves = malloc(400 * sizeof(t_move));
-	int nb_valid_moves = generate_valid_moves(*game, *b, game->white_to_play, valid_moves);
+	int nb_valid_moves = generate_valid_moves(*game, *b, game->white_to_play, valid_moves, 0);
 	free(valid_moves);
 	if (nb_valid_moves == 0)
 	{
@@ -35,10 +35,10 @@ int	check_for_end_game(t_bb *b, t_game *game)
 
 void manage_click(int x, int y)
 {
-	if (gui->square_selected)
-		printf("Selected square (%d, %d)\n", gui->square_selected->startX, gui->square_selected->startY);
-	else
-		printf("No square selected\n");
+	// if (gui->square_selected)
+	// 	printf("Selected square (%d, %d)\n", gui->square_selected->startX, gui->square_selected->startY);
+	// else
+	// 	printf("No square selected\n");
 	int square_n = get_square_from_xy(x, y);
 	t_case *square = &gui->case_list[square_n];
 	//printf("isSelected %d, isWhiteToPlay %d, square id %d, pieceIsWhite %d, square status %d, image_status %d\n", game->is_piece_selected, game->white_to_play, square_n, is_white_piece(square), square->status, square->square_img);
